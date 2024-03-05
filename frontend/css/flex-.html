@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            rel="stylesheet"
+            href="https://meyerweb.com/eric/tools/css/reset/reset200802.css"
+        />
+        <style>
+            ul {
+                width: 1200px;
+                height: 100px;
+                margin: auto;
+                background-color: #bfa;
+                list-style: none;
+                display: flex;
+                border: 5px solid #000;
+                /* flex-direction: column; */
+                /* justify-content: start; */
+            }
+            li {
+                width: 200px;
+                height: 100px;
+                line-height: 100px;
+                /* flex-shrink: 0; */
+            }
+            .ul-box li:nth-child(1) {
+                background-color: red;
+            }
+            .ul-box li:nth-child(2) {
+                background-color: orange;
+            }
+            .ul-box li:nth-child(3) {
+                background-color: blueviolet;
+            }
+            .ul-box li:nth-child(4) {
+                background-color: yellow;
+            }
+            .ul-box li:nth-child(5) {
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <ul class="ul-box">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+        <dv-active-ring-chart style="height: 100%" />
+
+        <script>
+            // 弹性盒模型 flex
+            // 几个重要概念:
+            // 1. 弹性盒: 弹性盒模型的容器.使用 display: flex;定义
+            // 2. 弹性子元素:弹性盒的子元素(必须).元素的宽度可弹性变化. (弹性子元素是沿主轴排列的)
+            // 3. 主轴(main axis): 默认为水平方向的 向右x 轴.
+            // 4. 交叉轴(cross axis): 默认为垂直方向的 向下 y 轴
+
+            // flex属性
+            // flex-direction:它定义了主轴方向(也可以说排列)
+            //  1. row:默认值,主轴水平向右,且起点在左侧.
+            //  2. row-reverse:主轴为水平向左,且起点换为右侧.
+            //  3. column: 主轴为垂直向下,起点为上侧.
+            //  4. column-reverse: 主轴为垂直向上,起点为下侧.
+
+            // flex-wrap: 是否允许换行
+            //  1. no-wrap:不换行,默认值.(弹性子元素随父元素而弹性缩小)
+            //  2. wrap: 自动换行
+            //  3. wrap-reverse：反向换行
+            // 其实 wrap 和 wrap-reverse 相当于改变了 交叉轴的指向。
+            // wrap 与 column效果类似。  wrap-reverse 与 column-reverse 效果类似。
+
+            // flex-flow：flex-direction 和 flex-wrap的简写属性。它接收两个值（可选），分别是 flex-direction和 flex-wrap的值
+
+            // justify-content：设置元素在主轴上的对齐方式
+            //  1. start：默认值，元素靠主轴的起始位置对齐
+            //  2. end：元素靠主轴的结束位置对齐
+            //  3. center：沿主轴方向居中对齐
+            //  4. space-between：将主轴方向空白位置分配到两个元素之间
+            //  5. space-around：将主轴方向空白位置分配到元素周围
+            //  6. space-space-evenly：将主轴方向空白位置均匀分配
+
+            // align-items：设置元素在交叉轴上的对齐方式
+            //  1. stretch：拉伸，元素会自动拉伸将侧轴撑满
+            //  2. start: 元素靠侧轴的起始位置对齐
+            //  3. end: 元素靠侧轴结束位置对齐
+            //  4. center：元素在侧轴上居中对齐
+
+            // align-content：设置元素在侧轴上空白空间的分配
+            //  1. space-between：将侧轴方向空白位置分配到两个元素之间
+            //  2. space-around：将侧轴方向空白位置分配到元素周围
+            //  3. space-space-evenly：将侧轴方向空白位置均匀分配
+        </script>
+    </body>
+</html>

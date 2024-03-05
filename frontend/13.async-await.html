@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>async - await</title>
+    </head>
+    <body>
+        <h1>async - await</h1>
+        <pre>async/await 实现底层过程(参考例一)</pre>
+
+        <h2>async 关键字</h2>
+        <pre>
+   async（asynchronous 异步、非同步） 关键字用于声明一个async函数。（参考例二）</pre
+        >
+        <ul>
+            async函数的执行流程情况分析：
+            <li>
+                如果async函数中，没有异步内容，那么它与<s>正常函数执行流程</s>
+                没有区别。
+            </li>
+        </ul>
+        <ol>
+            async函数与普通函数的区别：
+            <li>async函数的返回值一定是个Promise</li>
+            <li>
+                async函数的异常会被作为async函数返回的Promise的reject值处理,后续代码也会执行(同步函数则会直接终止报错)。
+            </li>
+            <li>async函数内部可以使用await关键字，而普通函数中不可以。</li>
+        </ol>
+
+        <h2>await 关键字</h2>
+        <ul>
+            await 关键字特点：（参考例三）
+            <li>
+                通常 await 关键字后面会跟一个表达式，这个表达式会返回一个
+                Promise对象
+            </li>
+            <li>
+                那么await
+                会等到Promise的状态变成fulfilled状态，之后继续执行异步函数
+            </li>
+            <li>await 后表达式的返回结果，是Promise对象resolve返回的值</li>
+        </ul>
+        <script>
+            // 例一：async/await 底层实现过程（以js模拟）
+            // 使用setTimeout模拟网络请求
+            const req = (url) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (url !== undefined) {
+                            resolve(url);
+                        } else {
+                            reject('has a error');
+                        }
+                    }, 1000);
+                });
+            };
+            // req('success')
+            //     .then((res) => {
+            //         console.log('res ->', res);
+            //     })
+            //     .catch((err) => {
+            //         console.log('err ->', err);
+            //     });
+
+            // req('not')
+            //     .then((res) => {
+            //         console.log('res ->', res);
+            //     })
+            //     .catch((err) => {
+            //         console.log('err ->', err);
+            //     });
+
+            // 需求：模拟现实情况
+            // 1.从一个员工id获取所属部门信息，
+            // 2.再用获得的部门信息获取公司信息,
+            // 3.从公司信息获取到老板信息
+            // 实现方案一: 虽然成功达到目的，但是形成了回调地狱
+            // req('personId').then((res) => {
+            //     req(res + ' - departmentId').then((res) => {
+            //         req(res + ' - bossId ').then((res) => {
+            //             console.log(res);
+            //         });
+            //     });
+            // });
+
+            // 实现方案二：使用Promise 链式调用优化方案一
+            // 解决了回调地狱问题 - 但依然有阅读问题
+            // req('personId')
+            //     .then((res) => {
+            //         return req(res + ' - departmentId');
+            //     })
+            //     .then((res) => {
+            //         return req(res + ' - bossId');
+            //     })
+            //     .then((res) => {
+            //         console.log(res);
+            //     });
+            // 方式三：Promise + generator 优化Promise链式调用
+            // function* getData() {
+            //     const res = yield req('personId');
+            //     const res1 = yield req(res + ' - departmentId');
+            //     const res2 = yield req(res1 + ' - bossId');
+            //     console.log(res2);
+            // }
+
+            // 手动执行方式 - 缺陷 - 回调地狱
+            // const getDataGenerator = getData();
+            // getDataGenerator.next().value.then((res) => {
+            //     getDataGenerator.next(res).value.then((res) => {
+            //         getDataGenerator.next(res).value.then((res) => {
+            //             getDataGenerator.next(res);
+            //         });
+            //     });
+            // });
+
+            // 使用递归函数解决手动执行的缺陷
+            // const generatorExecutor = (generatorFn) => {
+            //     // 获取生成器
+            //     const generator = generatorFn();
+            //     // 定义自动执行的递归函数
+            //     const executor = (val) => {
+            //         const res = generator.next(val);
+            //         if (res.done) return res.value;
+            //         res.value.then((res) => {
+            //             executor(res);
+            //         });
+            //     };
+            //     // 调用
+            //     executor();
+            // };
+
+            // // 使用自动执行函数执行
+            // generatorExecutor(getData);
+
+            // 方式四：使用async/await实现
+            // async function getData() {
+            //     const res = await req('personId');
+            //     const res1 = await req(res + ' - departmentId');
+            //     const res2 = await req(res1 + ' - bossId');
+            //     console.log(res2);
+            // }
+            // getData();
+            // async/await本质是Promise + generator的语法糖
+            // 对比 方式三 和 方式四，基本上就是将 '*' 换成了 async， yield 换成了 await
+
+            // 例二：async - 声明async函数及async函数的执行流程
+            // 特别点：在一个类中声明一个异步方法
+            // class AsyncObj {
+            //     // 声明异步方法
+            //     async fn() {}
+            // }
+
+            // // async函数的执行流程
+            // // 1. 如果async函数中，没有异步内容，那么它与正常函数执行流程没有区别
+
+            // const noAsyncFn = async () => {
+            //     console.log(`noAsyncFn start`);
+            //     console.log(`noAsyncFn 内部代码执行`);
+            //     // async函数内部异常
+            //     throw new Error('noAsyncFn throw a error');
+            //     console.log(`noAsyncFn end`);
+            // };
+
+            // // 控制台查看打印结果顺序
+            // console.log(`position before noAsyncFn log`);
+            // const noAsyncFnRe = noAsyncFn();
+            // console.log(`noAsyncFn return value ->`, noAsyncFnRe);
+            // // 捕获async函数中throw出的错误
+            // noAsyncFnRe.catch((err) => {
+            //     console.log(`${err}`);
+            // });
+
+            // console.log(`position after noAsyncFn log`);
+
+            // 例三：async - await组合使用，await的特点
+            const asyncFn = async () => {
+                console.log(`before first asyncFn await`);
+
+                const res = await req('from asyncFn first');
+                console.log(res);
+                console.log(`after first asyncFn await`);
+
+                console.log(`before second asyncFn await`);
+
+                const res1 = await req('from asyncFn second');
+                console.log(res1);
+                console.log(`after second asyncFn await`);
+            };
+            asyncFn();
+        </script>
+    </body>
+</html>

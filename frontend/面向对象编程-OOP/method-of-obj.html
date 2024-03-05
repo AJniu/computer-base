@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 对象相关的几个小方法
+        // 1. instanceof :判断某个对象是否是某个类的实例
+        // 缺陷：instanceof 找到的原型链上的所有对象，会判断出错
+        class Person {
+            constructor(name = "polar bear") {
+                if (name) {
+                    this.name = name
+                }
+            }
+
+            sayHello() {
+                console.log('hello');
+            }
+        }
+        const p = new Person()
+        console.log('p instanceof Person', p instanceof Person);
+        console.log('p instanceof Object', p instanceof Object);
+
+        // 2. in 关键字：判断一个对象上是否有某个属性 (不推荐使用)
+        // 缺陷：in 关键字会在原型上查找是否拥有某属性
+        console.log(`'sayHello' in p`, 'sayHello' in p);
+
+        // 3. obj.hasOwnProperty(propertyName): 判断对象本身是否拥有某属性
+        // 缺陷：使用 Object.create(null) 创建的没有原型的对象时，会没有 hasOwnProperty 方法而报错 (不推荐使用)
+        const obj = Object.create(null)
+        // console.log(obj.hasOwnProperty('name'));
+
+        // 4. Object.hasOwn(obj, propertyName) 静态方法: 判断指定对象 obj, 是否拥有某属性
+        console.log('Object.hasOwn(obj, "name")', Object.hasOwn(obj, "name"));
+    </script>
+</body>
+</html>

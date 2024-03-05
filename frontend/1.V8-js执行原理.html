@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 浏览器是如何工作的？
+
+            //  在浏览器中输入一个网址后，发生了什么？
+            // 1. 浏览器通过DNS服务器解析域名获取到该域名的IP地址
+            // 2. 浏览器根据得到的IP地址向web服务器发送一个http请求,通过三次握手建立tcp连接
+            // 3. 服务器收到请求并进行处理
+            // 4. 服务器返回一个响应（通常是index.html）
+            // 5. 浏览器对该相应进行解码，遇到link就下载对应的css文件，遇到script就下载对应的js文件
+            // 6. 浏览器解析html为Dom，解析css规则。DOM + CSS规则生成render-tree,布局引擎layout对render-tree进行处理，浏览器渲染进程开始绘图。
+            // 6. 页面显示完成后，浏览器发送异步请求。
+            // 7. 整改过程结束之后，浏览器关闭TCP连接。
+
+            // 浏览器内核：负责浏览器HTML解析，布局，渲染等工作。谷歌浏览器内核Blink
+            // 浏览器内核指的是浏览器的排版引擎(layout engine),也称为浏览器引擎(browser engine),页面渲染引擎等
+
+            // 浏览器渲染过程:
+            // 1. 浏览器拿到index.html文件开始对html进行解析.遇到link和script就下载对应的css和js文件
+            // 2. 浏览器通过HTML Paser解析html文件为DOM-Tree,通过CSS Paser将css文件解析为Style Rules
+            // 3. 然后将DOM Tree 和 Style Rules生成 Render Tree，
+            // 4. 布局引擎layout再对render-tree进行处理（重排）
+            // 5. 浏览器按照 render-tree 对页面进行 Painting(重绘)，将页面展示到浏览器上
+
+            // https://boardmix.cn/app/share/CAE.CPHP2QwgASoQuPCOxNZAlqbL5Zoe9uVAVDAGQAE/vrMocS
+
+            // 由此可见，重排一定会进行重绘，重绘不一定会重排。   影响页面布局就会进行重排。
+
+            // js引擎：js代码的解释、执行者（chrome是V8引擎）
+            // js代码解析过程
+            // 1.浏览器内核将js文件以stream（流形式）给js引擎，
+            // 2.js引擎对文件进行编码转换（统一编码，如utf-8）
+            // 3.js引擎将代码交给scanner进行词法解析和语法解析形成AST树（有parse和pre-parse两种方式解析）
+            // 4.js引擎将AST通过ignition库（解释器）转换成字节码（bytecode）
+            // 5.js引擎根据系统将字节码转换成对应平台的机器指令交给cpu执行。
+
+            // 针对上述过程V8引擎做了一些优化：
+            // 使用TurboFan（编译器）将多次执行的代码（多次使用的代码通过ignition标记）转换为优化后的机器码，方便以后直接使用。
+            // 当这个优化后的机器码不再适用时，v8也会将此机器码Deoptimization为字节码，然后执行。
+            // 如一个函数 sum(a, b) 的功能是将 a 和 b的值进行相加，但如果最初a,b的值都为数值，但某次调用时a,b值为字符串时
+            // 此函数的机器码会重新编译为字节码，然后执行。
+            // 这就是ts写的代码比js写的代码运行效率高的原因，因为不会重复字节码转换为机器码，机器码转为字节码的过程。
+
+            // 注:词法分析 - 对代码中的每个词进行切割,形成多个tokens.
+            // 以const tip = "why"为例： tokens形如 tokens[{type: 'keyword', value: 'const'}, {type：'Identifier', name: 'tip'} ...]
+
+            // 语法分析 - 对词法分析的结果进行分析（即对数组中每个对象进行分析），最后得到AST（抽象语法树）
+
+            // AST的妙用，已babel  ts -> js为例：
+            // ts 抽象成-> ast 根据ts与js对应修改生成 -> 新js的 ast -> generate code(生成代码) -> 对应的js代码
+
+            // 以接下来的代码为例,简述代码是如何执行的
+            var name = 'PB';
+            foo(123);
+            function foo(num) {
+                var name = 'Polar bear';
+                var m = 1;
+                console.log(name);
+
+                function bar() {
+                    console.log(name);
+                }
+                bar();
+            }
+
+            // 1.：首先，上述代码会经过上述代码解析过程，
+            //  1.1：在js源码被解析为AST时，v8引擎会帮我们创建一个 GlobalObject（GO） = {}对象(堆内存中),包含全局属性，宿主对象等，（window的值为this,指向这个对象。）
+            //  var 声明是变量也会被添加为这个对象的属性，但因为代码未执行，所以未赋值（undefined）。
+            //  由 function 声明的函数会在堆内存中创建一个对象，然后将该地址赋值给对应的属性。
+
+            // 2.运行代码：
+            //  2.1：v8为了执行代码，v8内部会有一个执行上下文栈（函数调用栈，Execution Context Stash）
+            //  2.2：因为我们执行的是全局代码，为了全局代码能正常执行，需要创建 全局执行上下文 (Global Execution Context)，GEC内部还会生成一个对象VO（Veriable Object），指向GO
+            //  2.3: 开始执行上面的代码（从上往下依次执行），如 var name = 'PB'， 它会通过VO找到GO,然后将 'PB' 赋值给GO的name属性
+
+            // https://boardmix.cn/app/share/CAE.CPHP2QwgASoQSuNl42xE_ifItZhVbMxxgjAGQAE/vrMocS
+        </script>
+    </body>
+</html>

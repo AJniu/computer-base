@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // es6+
+            // 一:字面量增强的写法
+            // const key = 'name';
+            // const obj = {
+            //     // computed prototype name (计算属性名)
+            //     [key + 123]: 'computed prototype name',
+            // };
+            // console.log(obj);
+
+            // 二：let/const 作用域提升问题 --- 会在词法环境被实例化时被创建，但直到变量声明时才能被访问。
+            // ECMA262对let和const的描述：这些变量会被创建在包含他们的词法环境被实例化时（FEC创建时），
+            // 但是是不可以访问它们的，直到词法绑定被求值。
+
+            // 三：块级作用域 {}
+            // es6的块级作用域对 let、const、class、function声明的变量/类型是有效的，对var无效
+
+            {
+                var useVar = 'var declare';
+                let msg = 'xxxx';
+                function foo() {
+                    console.log('foo function!');
+                }
+                class Person {}
+            }
+            // console.log(`output->msg`, msg);
+            // ECMA规范块级作用域对函数是有效的，
+            // 但不同浏览器对它的实现不同（大部分浏览器为了兼容以前的代码,让块级作用域对function是无效的）
+            foo();
+            console.log(useVar);
+            // const p1 = new Person(); // Uncaught ReferenceError: Person is not defined
+
+            // if、switch、for中的代码也是块级作用域（即如果在这里面使用var定义了一个变量，外边是可以访问的）
+            // for 循环中 条件语句声明的变量相当于在 {} 内部声明(所以如果使用var声明变量会造成全局变量，而let声明的变量会形成块级作用域)
+            // 即 for (let i = 0; i < 10; i++) {} 中的 i 相当于 for () {let i = 0}
+            // for (var i = 0; i < 5; i++) {
+            // 此处相当于 {var i = 0}，使i变成全局变量, {}失效，所以console.log(i)会向全局作用域找 i;
+
+            for (let i = 0; i < 5; i++) {
+                // 此处相当于 {let i = 0 }，使{}块级作用域生效，所以console.log(i)会向对应的块级作用域查找 i
+                setTimeout(() => {
+                    console.log(i);
+                }, 1000);
+            }
+
+            // 四. 展开运算符 --- （...)
+            // 作用范围：字符串（按go中字符串是字符的切片来理解合理。）、数组、对象
+            // 特性：展开运算符是浅拷贝。
+
+            // 五. Symbol --- es6新增基本数据类型（符号），用来生成独一无二的值。
+            const s = Symbol(); // 唯一(Symbol不是构造函数，不能用new调用)
+            const s1 = Symbol(); // 唯一
+            console.log(s === s1);
+
+            // 传入描述(string | number)
+            const descSym = Symbol('have description Symbol');
+            console.log(descSym.description);
+
+            // 当做对象key
+            // （现在对象的key支持字符串和Symbol，但遍历或Object.keys(obj)时，获取不到Symbol类型的key)
+            // (Object.getOwnPropertySymbols(obj) 可以获取到所有Symbol类型的key)
+
+            const obj = {
+                [s]: 'xxxx',
+            };
+            console.log(obj[s]);
+
+            // Symbol创建相同的值 - Symbol.for(key)
+            const sa = Symbol.for('one');
+            const sb = Symbol.for('one');
+            console.log(sa === sb); // 指向同一个内存地址
+            // 获取key : Symbol.keyFor(sa)
+
+            // 六. Array.prototype.includes(val, index = 0) : boolean
+            // 从 index 处开始查找，数组中是否包含元素 val
+            // 特点：可以判断 NaN 是否存在
+
+            // 七. 幂运算符（**）： 2 ** 3 === 2 * 2 * 2 = Math.pow(2, 3)
+
+            // 八. Object.keys(obj) 与 Object.values(obj), 都返回一个数组
+
+            // 九. Object.entries(obj) : 获取一个包含 [key, value] （entries结构）的数组
+            // Object.fromEntries(entries结构)
+
+            // 十. String.prototype.padStart(length, str) 和 String.prototype.padEnd(length, str): 填充字符串
+            // 返回一个使用 str 填充到指定 length 的新字符串。
+
+            // 十一. Array.prototype.flat(depth = 1):数组扁平化（数组中的多维数组解构深度为 depth 次）
+
+            // 十二. Array.prototype.flatMap(callback, this):数组扁平化，与 flat()方法的区别是：
+            // 1. flatMap()方法先做map操作，再做flat操作
+            // 2. flatMap()中的flat相当于深度为 1 。
+            const flatArr = ['hello world', 'hello you', 'hello me'];
+            const words = flatArr.flatMap((item) => item.split(' ')); // 先变为了[[],[],[]]，再flat
+            console.log(words);
+
+            // 十三. globalThis：无论什么环境，都是对应的全局对象（browser -> window, node -> global）
+
+            // 十四. FinalizationRegistry类：当注册在该类实例对象中 的 对象 被销毁时，会触发回调函数
+
+            // 实例化对象时传入回调函数，该函数会在每个被注册对象被销毁时触发。
+            // 本质上监控的是 存储对象的那块内控是否被回收
+            const finalRegistry = new FinalizationRegistry((value) => {
+                console.log('a obj has been destory');
+            });
+            let destoryObj = { name: 'destoryObj' };
+            // 将对象 destoryObj 注册到 finalRegistry中，并传入标识
+            finalRegistry.register(destoryObj, 'to destory callback value');
+
+            destoryObj = null;
+
+            // 十五. WeakRef类: new WeakRef(obj) 创建一个弱引用（相当于WeakSet和WeakMap对对象的引用）,可用FinalizationRegistry实验。
+            // WeakRef.prototype.deref()：返回该弱引用指向的对象（弱引用本身无法直接获取指向对象的值）。若引用对象已销毁，返回undefined
+
+            // 十六. 空值合并操作符（??）: a ?? b 即当 a 为 null 或 undefined 时，返回 b 的值，否则返回 a 的值。
+
+            // 十七. 可选链（?.）: obj?.childKey?.grandKey 即 当 ?. 之前的值为 undefined 时，返回undefined，后续的读取操作不执行
+
+            // 十八. 逻辑或赋值运算（ ||= ）:  a ||= 'defaultVal' 相当于 a = a || 'defaultVal'
+
+            // 十九. 逻辑与赋值运算（&&=）： obj &&= obj.name 相当于 obj = obj && obj.name
+
+            // 二十. 逻辑空赋值运算（??=）:  a ??= 'defaultVal' 相当于 a = a ?? 'defaultVal'
+        </script>
+    </body>
+</html>

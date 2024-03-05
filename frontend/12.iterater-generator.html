@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Iterator - Generator</title>
+    </head>
+    <body>
+        <h1>Iterator（迭代器）和 Generator（生成器）</h1>
+        <h2>Iterator - 迭代器</h2>
+        <pre>
+   迭代器本质上是一个对象，它可以帮助我们去遍历另一个容器对象（数组，对象，链表等）</pre
+        >
+        <ol>
+            在js中，迭代器也是一个具体的对象，这个对象需要符合迭代器协议（iterator
+            protocol）：
+            <li>
+                迭代器协议定义了产生一系列值（无论是有限还是无限个）的标准方式。
+            </li>
+            <li>在js中这个标准就是一个特定的next方法。（参考例一：）</li>
+        </ol>
+
+        <h2>可迭代对象</h2>
+        <pre>
+   当一个对象实现了iterable protocol协议时，它就是一个可迭代对象。</pre
+        >
+        <pre>
+   这个对象的要求是必须实现 @@iterator 方法，在代码中，我们使用Symbol.iterator 访问该属性（是一个方法）。（参考例二）</pre
+        >
+
+        <h2>可迭代对象的应用：（还有很多，举一下常用的例子）</h2>
+        <ul>
+            <li>for ... of语法：内部原理就是通过迭代器实现的</li>
+            <li>
+                (spread
+                syntax)展开语法（...）:内部实现也是通过迭代器实现（参考例四-4.1）<br />
+                注：(对象也能使用展开语法，不是使用的迭代器，是ES9为对象特别处理的)
+            </li>
+            <li>
+                解构语法：也是通过迭代器实现的（参考例四-4.2）<br />
+                注：(对象也能使用解构语法，不是使用的迭代器，是ES9为对象特别处理的)
+            </li>
+        </ul>
+
+        <h2>自定义类的可迭代性</h2>
+        <h3>目标：实现自定义类实例对象的可迭代（参考例五）</h3>
+
+        <h2>Generator - 生成器</h2>
+        <pre>
+   生成器是ES6中新增的<strong>一种函数控制、使用的方案</strong>，它可以让我们更加灵活的控制函数什么时候继续执行，暂停执行等。</pre
+        >
+
+        <ul>
+            生成器函数也是一个函数，但是和普通的函数有一些区别：
+            <li>首先，生成器函数需要在function关键字的后面加一个符号 *</li>
+            <li>其次，生成器函数可以通过yield关键字来控制函数的执行流程。</li>
+            <li>
+                最后，生成器函数的返回值是一个generator（生成器）<br />
+                注：生成器实际上是一种特殊的迭代器
+            </li>
+        </ul>
+
+        <h2>生成器替代迭代器使用</h2>
+        <pre>
+   生成器本身就是一种特殊的迭代器，所以可以使用生成器替代迭代器使用</pre
+        >
+        <script>
+            // 例一：一个具体的迭代器对象
+            const iteratorObj = {
+                // 实现迭代器对象必备的next方法（准从迭代器协议）
+                // next方法需遵循以下要求：
+                // 1.next 方法应该是一个无参或只有一个参数的函数（生成器就是一种特殊的迭代器）。
+                // 2.next 方法应返回一个拥有以下两个属性的对象：
+                //  1：done(boolean)：
+                //   如果迭代器可以产生序列中的下一个值，则为false。（这等价于没有指定done这个属性）
+                //   如果迭代器已将序列迭代完毕，则为true。这种情况下，value是可选的，如果它依然存在，即为迭代结束之后的默认返回值。
+                //  2：value: 迭代器返回的任何JavaScript值。done 为true的情况下可省略。
+                next() {
+                    return {
+                        done: true,
+                        value: undefined,
+                    };
+                },
+            };
+            // 以names为例查看数组原生的迭代器，并查看它的执行过程
+            const names = ['a', 'b', 'c'];
+            // const namesIterator = names[Symbol.iterator]();
+            // console.log(namesIterator.next());
+            // console.log(namesIterator.next());
+            // console.log(namesIterator.next());
+            // console.log(namesIterator.next()); // 当下一项不存在时，返回一个 {done: true, value: undefined} 对象
+
+            // 代码模拟真实迭代器
+            const createIterator = (arr) => {
+                let index = 0;
+                return {
+                    next() {
+                        if (index < arr.length) {
+                            return {
+                                done: false,
+                                value: arr[index++],
+                            };
+                        } else {
+                            return {
+                                done: true,
+                                value: undefined,
+                            };
+                        }
+                    },
+                };
+            };
+
+            const namesIterator = createIterator(names);
+            console.log(namesIterator.next());
+            console.log(namesIterator.next());
+            console.log(namesIterator.next());
+            console.log(namesIterator.next());
+            console.log(namesIterator.next());
+
+            // 例二：可迭代对象
+            // const iterableObj = {
+            //     // 需要有一个Symbol.iterator属性，它是一个方案，返回一个迭代器（这就是要求实现的@@iterator方法）
+            //     [Symbol.iterator]: function () {
+            //         return {
+            //             next() {
+            //                 return {
+            //                     done: false,
+            //                     value: '',
+            //                 };
+            //             },
+            //         };
+            //     },
+            // };
+
+            // 以names为例创建一个可迭代对象
+            const iterableObj = {
+                names: ['a', 'b', 'c', 'self-iterableObj-end'],
+                [Symbol.iterator]: function () {
+                    let index = 0;
+                    return {
+                        next: () => {
+                            if (index < this.names.length) {
+                                return {
+                                    done: false,
+                                    value: this.names[index++],
+                                };
+                            } else {
+                                return {
+                                    done: true,
+                                    value: undefined,
+                                };
+                            }
+                        },
+                    };
+                },
+            };
+            // 调用可迭代对象的 Symbol.iterator 属性，生成迭代器
+            // const iteratorFn = iterableObj[Symbol.iterator]();
+            // console.log(iteratorFn.next());
+            // console.log(iteratorFn.next());
+            // console.log(iteratorFn.next());
+            // console.log(iteratorFn.next());
+
+            // for ... of 遍历的对象，必须要求是iterable（可迭代）对象
+            // 如果使用 for ... of 遍历普通对象，会报错
+            // 但使用 for ... of 遍历上面自己写的 iterableObj，则可以正常被遍历
+            // 本质上 for...of 就是使用的 iteratorObj 生成处理的迭代器的值（根据done的值判断是否结束）
+
+            for (const item of iterableObj) {
+                console.log(item);
+            }
+
+            // 实践：将一个对象使用for ...of 遍历
+            const objIterable = {
+                x: 1,
+                y: 2,
+                z: 3,
+                m: 4,
+                n: 4,
+                [Symbol.iterator]: function () {
+                    const objEntryArr = Object.entries(this);
+                    let index = 0;
+                    return {
+                        next() {
+                            if (index < objEntryArr.length) {
+                                return {
+                                    done: false,
+                                    value: {
+                                        [objEntryArr[index][0]]:
+                                            objEntryArr[index++][1],
+                                    },
+                                };
+                            } else {
+                                return {
+                                    done: true,
+                                    value: undefined,
+                                };
+                            }
+                        },
+                    };
+                },
+            };
+
+            for (const item of objIterable) {
+                console.log(item);
+            }
+            // 例三：内置的可迭代对象
+            // 以数组为例
+            const arr = ['11', '22', '33'];
+            // 获取数组的迭代器对象
+            const arrIterator = arr[Symbol.iterator]();
+            // 调用迭代器方法，获取返回值
+            console.log(arrIterator.next());
+
+            // 修改数组实例的 Symbol.Iterator 属性，则遍历该实例时会报错 - arr is not iterable
+            // arr[Symbol.iterator] = null;
+            // for (const item of arr) {
+            //     console.log(item);
+            // }
+
+            // 例四：迭代器的应用（以自己编写的可迭代对象为例）
+            //  4.1 - 展开语法
+            const spreadArr = [...iterableObj];
+            console.log(spreadArr);
+
+            //  4.2 - 解构语法
+            const [item1, ...itemArgs] = iterableObj;
+            console.log(item1, itemArgs);
+
+            // 例五：自定义生成可迭代对象的类
+            class Course {
+                constructor(courseName, stu) {
+                    this.name = courseName;
+                    this.stu = stu;
+                }
+
+                // 新增学生
+                add(newStu) {
+                    this.stu.push(newStu);
+                }
+
+                // 实现可迭代协议
+                [Symbol.iterator]() {
+                    let index = 0;
+                    return {
+                        next: () => {
+                            if (index < this.stu.length) {
+                                return {
+                                    done: false,
+                                    value: this.stu[index++],
+                                };
+                            } else {
+                                return {
+                                    done: true,
+                                    value: undefined,
+                                };
+                            }
+                        },
+                        // 定义return 方法可以监听迭代器提前终止
+                        // 正常遍历结束不会触发此方法
+                        return() {
+                            console.log(`迭代器提前停止了`);
+                            // 必须返回一个对象，不然会报错
+                            return { done: true, value: undefined };
+                        },
+                    };
+                }
+            }
+
+            const C = new Course('c语言', [
+                'nyb',
+                'wn',
+                'lyp',
+                'jzy',
+                'csk',
+                'zxj',
+            ]);
+            for (const item of C) {
+                // 如果设置提前终止条件，会触发迭代器的 return 方法
+                // if (item === 'csk') break;
+                console.log(item);
+            }
+
+            // 生成器
+
+            // 例六：生成器函数
+            // function关键字后跟 *
+            function* generatorFn() {
+                console.log(`generatorFn start run`);
+
+                let x = 1;
+                console.log(x);
+                console.log(`第一个yield前所有代码执行完毕`);
+                // 使用yield关键字来控制函数的执行流程
+                // 遇到yield的时候，函数就会暂停执行
+                // yield 后跟next()方法中value的返回值（此时next()方法的返回值为 {done: false, value: x}）
+                // 此处定义的变量nextYieldParams 会作为下一个next(params)方法的形参
+                // （如下面传过来的实参是10，那么下面使用时 nextYieldParams 的值就是10, 与后面的yield x无关，只是这样写的语法）
+                const nextYieldParams = yield x;
+
+                console.log('第二个yield的代码开始执行');
+
+                let y = 2 * nextYieldParams;
+                console.log(y);
+                console.log(`第二个yield前所有代码执行完毕`);
+                try {
+                    yield y;
+                } catch (err) {
+                    console.log('捕获第二个yield的error ->', err);
+                }
+
+                console.log(`第三个yield代码开始执行`);
+                let z = 3;
+                console.log(`output->z`, z);
+                console.log(`第三个yield前所有代码执行完毕`);
+
+                console.log(`generatorFn finshed`);
+                // 遇到return的时候，函数就会停止执行(遇到return后，生成器next方法的返回值会是 {done: ture, value: return的值（首次）})
+                // 当有return时，生成器执行完毕后，第一次的value会是return的值
+                // return 1;
+            }
+            // 直接调用生成器函数，函数内部的代码并不会直接被执行
+            // 而是会返回一个生成器对象(生成器)。
+            const generatorObj = generatorFn();
+
+            // 每次调用next()方法都会执行到下一个 yield 关键字所在
+            // 与迭代器next方法一样，它也是有返回值的
+            console.log(`返回值：`, generatorObj.next());
+
+            // 生成器的next()方法可以传递参数
+            console.log(`返回值：`, generatorObj.next(10));
+            console.log(`返回值：`, generatorObj.next());
+            console.log(`返回值：`, generatorObj.next());
+
+            // 生成器的 return()方法 - 终止函数执行(相当于在函数内部直接写了个 return val)
+            // console.log(`生成器的return方法的返回值`, generatorObj.return(999));
+
+            // 生成器的 throw(msg)方法 - 抛出异常，并终止执行（未使用try ...catch捕获的情况下）
+            // 如果在函数内部有捕获的情况下，会将代码执行到下一个yield,且有返回值
+            // （相当于在函数内部写了个 throw new Error(msg)）
+            // console.log(`返回值：`, generatorObj.next());
+
+            // // 生成器的next()方法可以传递参数
+            // console.log(`返回值：`, generatorObj.next(10));
+            // console.log(
+            //     `生成器的throw方法抛出异常：`,
+            //     generatorObj.throw('generator has a Error')
+            // );
+
+            // 例七：使用生成器来替代迭代器
+            //  7.1 - 使用生成器重构上述 createIterator 函数
+            function* createIteratorUseYield(arr) {
+                // 方式一：
+                // for (let i = 0; i < arr.length; i++) {
+                //     yield arr[i];
+                // }
+                // 方式二： yield* 可迭代对象 - 就是将可迭代对象每个元素依次 yield 出去
+                // yield* 可迭代对象 本质上可以说是 for(const item of iterableObj) { yield item } 的语法糖
+                yield* arr;
+            }
+            const namesGenerator = createIteratorUseYield(names);
+            // console.log(`例七： 7.1 -------`);
+            // console.log(namesGenerator.next());
+            // console.log(namesGenerator.next());
+            // console.log(namesGenerator.next());
+            // console.log(namesGenerator.next());
+
+            //  7.2 - 迭代一个范围内的数字
+            function* rangeGenerator(start, end) {
+                let num = start;
+                while (num < end) {
+                    yield num++;
+                }
+            }
+            // const numRangeGenerator = rangeGenerator(3, 6);
+            // console.log(`例 7.2 ------`);
+            // console.log(numRangeGenerator.next());
+            // console.log(numRangeGenerator.next());
+            // console.log(numRangeGenerator.next());
+
+            //  7.3 - 重写上述 生成可迭代对象的类 Course
+            class CourseUseGenerator {
+                constructor(courseName, stu) {
+                    this.name = courseName;
+                    this.stu = stu;
+                }
+
+                // 使用生成器实现可迭代协议
+                [Symbol.iterator] = function* () {
+                    // 上面可转换为  *[Symbol.iterator]() {}
+                    yield* this.stu;
+                };
+            }
+
+            const courseC = new CourseUseGenerator('C', [
+                'nyb',
+                'wn',
+                'lyp',
+                'jzy',
+                'csk',
+                'zxj',
+            ]);
+            console.log('例 7.3 ------');
+
+            for (const item of courseC) {
+                console.log(item);
+            }
+        </script>
+    </body>
+</html>

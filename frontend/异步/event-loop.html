@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <button id="btn">click trigger</button>
+        <script>
+            // 前提：要有一个重要的认识
+            // 在js中，真正耗时的操作，实际上并不是由js进程在执行的。
+            // 浏览器的每个进程是多线程的，那么其它线程可以来完成这个耗时的操作；
+            // 如网络请求、定时器（这些都是浏览器处理的），我们只需要在特定的时候执行该有的回调函数即可。
+
+            // 事件循环 - event loop
+            //  - 函数每次执行时，都会产生一个执行环境（个人觉得可以叫 runtime）
+            //  - 执行环境负责存储函数执行时所产生的 一切数据
+
+            // 问题：函数的执行环境存储到哪里了？
+            //  - 函数的 执行环境 存储到了一个叫 调用（堆）栈的地方
+
+            // 调用栈（call stack）--- (浏览器debug时有一项就是call　stack　－调用堆栈)
+            //  - 调用栈负责存储函数的执行环境
+            //  - 当一个函数被调用时，它的执行环境会作为一个 栈帧 插入到调用栈 栈顶
+            //  - 函数执行完毕，其栈帧会自动从栈顶弹出
+
+            // 消息队列（任务队列）
+            //  - 消息队列负责存储将要执行的函数
+            //  - 当我们触发一个事件时，其相应函数并不是直接就添加到调用栈中的（js单线程），而是先将任务放入任务队列中
+            //  - 因为调用栈中有可能会存在一些还没有执行完的代码
+
+            // 在js中，任务队列有两种：
+            //  - 宏任务队列（大部分任务都去宏任务队列排队）
+            //  - 微任务队列（Promise的回调函数（then，catch，finally）在微任务队列排队）
+
+            const fn = () => {
+                let a = 10;
+                console.log('fn');
+
+                const fn1 = () => {
+                    console.log('fn1');
+                };
+
+                fn1();
+            };
+            fn();
+            console.log('fn run finished');
+
+            const btn = document.getElementById('btn');
+            // 此点击事件的回调函数并不会在 script 标签加载时执行，
+            // 所以它是在点击事件触发时，传入消息队列。待 调用栈为空 且 处于消息队列第一位时  被推入调用栈执行（debug可看）
+            btn.onclick = () => {
+                alert('click trigger success');
+
+                const time = Date.now();
+                // 模仿阻塞
+                while (Date.now() - time < 3000) {
+                    // 循环造成调用栈执行3秒，可查看连续点击效果
+                }
+            };
+
+            // 宏任务与微任务
+
+            // 常见的宏任务：代码整体 script标签，setTimeout，setInterval，setImmediate，事件回调函数等。
+            // 常见的微任务：原生Promise（有些实现的Promise将then方法放到了宏任务中）、process.nextTick、MutationObserver
+            // 宏任务是有宿主环境发起的，微任务是js执行时产生的。
+            // queueMicrotask(callback)：向微任务队列中添加一个任务
+            // queueMicrotask(() => {
+            //     console.log('after ');
+            // });
+            // console.log("before ")
+
+            // 事件循环：JS会创建一个类似于while(true)的循环，每执行一次循环体的过程称之为Tick。
+            // 每次Tick的过程就是查看(消息队列)是否有待处理事件，如果有则取出相关事件及回调函数放入调用栈中执行。
+
+            // 主线程：JS只有一个线程，即主线程。事件循环就是主线程中调用（执行）栈里的代码执行完毕后，才开始执行的。
+            // 所有主线程（调用栈）中要执行的代码事件过长就会阻塞事件循环的执行。
+        </script>
+    </body>
+</html>

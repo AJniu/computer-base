@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+
+    <body>
+        <script>
+            // 定义类的思路
+            // 1. 将功能都分析清楚，再定义类
+            class MyPromise {
+                // 存储结果
+                #PromiseResult;
+                // 存储状态
+                #PromiseStatus = 'pending';
+                // 定义私有属性callback，用来存储 then 方法的回调函数
+                // #callback  // 如果这样多次掉调用then方法读取数据时只能获得最后一次
+                // 定义回调函数数组
+                #callbackArr = [];
+                constructor(executor) {
+                    // 接收一个 executor（执行器）作为参数
+                    // 传递resolve 和 reject的时候使用 bind 锁死 this(bind - 生成一个绑定this的新函数)
+                    try {
+                        executor(
+                            this.#resolve.bind(this),
+                            this.#reject.bind(this)
+                        ); // 对应创建Promise时调用执行器
+                    } catch (error) {
+                        this.#reject.bind(this, error);
+                    }
+                }
+
+                // 创建Promise对象时的resolve和reject
+                // 私有 resolve，用来存储成功的数据
+                #resolve(value) {
+                    if (this.#PromiseStatus !== 'pending') return;
+                    // 这里直接使用this是会报错的，
+                    // 因为this是在new Promise()对象时在回调函数中以函数形式调用的，且类是执行在严格模式下的，所以，this 是undefined
+                    this.#PromiseStatus = 'fulfilled';
+                    this.#PromiseResult = value;
+                    // 调用resolve时，说明异步函数已经执行完毕，所以此时调用 then 方法的回调函数
+
+                    // 调用之前先做判断，避免同步调用时出错。
+                    // this.#callback && this.#callback(this.#PromiseResult)
+
+                    // 调用then方法的回调函数时，应该将其推入微任务队列，而不是直接调用
+                    queueMicrotask(() => {
+                        // for (const fn of this.#callbackArr) {
+                        //     fn()
+                        // }
+                        this.#callbackArr.forEach((fn) => fn());
+                        this.#callbackArr.length = 0;
+                        // this.#callbackArr.length && this.#callbackArr(this.#PromiseResult)
+                    });
+                }
+
+                // 私有 reject，用来存储拒绝或错误信息
+                #reject(reason) {
+                    if (this.#PromiseStatus !== 'pending') return;
+                    this.#PromiseStatus = 'rejected';
+                    this.#PromiseResult = reason;
+                }
+
+                // 解决this指向为undefined的第一种方式：箭头函数. 缺点，以等号的形式添加的属性，是添加到实例上的
+                // #resolve= (result) => {
+                //     this.#PromiseStatus = 'fulfilled'
+                //     this.#PromiseResult = result
+                // }
+
+                // #reject = (reason) => {
+                //     this.#PromiseStatus = 'rejected'
+                //     this.#PromiseResult = reason
+                // }
+
+                // then 方法
+                then(onfulfilled, onrejected) {
+                    // then 中回调函数的返回值，会成为新的 Promise的数据
+                    return new MyPromise((resolve, reject) => {
+                        if (this.#PromiseStatus === 'pending') {
+                            this.#callbackArr.push(() => {
+                                // onfulfilled(this.#PromiseResult)
+                                resolve(onfulfilled(this.#PromiseResult));
+                            });
+                        } else if (this.#PromiseStatus === 'fulfilled') {
+                            // 目前，then只能读取已经存储进Promise对象的数据
+                            // onfulfilled(this.#PromiseResult)    // then 方法的回调函数应该放入微任务队列中，而不是直接执行
+                            queueMicrotask(() => {
+                                resolve(onfulfilled(this.#PromiseResult));
+                            });
+                        }
+
+                        if (this.#PromiseStatus === 'rejected') {
+                            reject(this.#PromiseResult);
+                        }
+                    });
+                }
+
+                // 定义Promise的静态方法
+                static resolve() {
+                    console.log('resolve');
+                }
+
+                static reject() {
+                    console.log('reject');
+                }
+
+                static all(arr) {
+                    console.log('all');
+                }
+            }
+
+            const p = new MyPromise((resolve, reject) => {
+                // 这里resolve是以函数形式调用，所以在创建Promise对象时，运行在严格模式下，它的this指向undefined
+                resolve(111);
+            });
+            // console.log(p.then((res) => console.log(111)));
+            // console.log(p.then((res) => console.log(222)));
+            // console.log(p.then((res) => console.log(333)));
+            p.then((res) => {
+                console.log('读取数据1 -> ', res);
+                return 222;
+            }).then((res) => {
+                console.log('读取数据2 -> ', res);
+            });
+        </script>
+    </body>
+</html>

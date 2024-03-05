@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 冒泡排序：时间复杂度O(n^2)，最好是为O(n)，最差时为O(n^2)
+            // 重复地走访过要排序的数列，一次比较两个元素，如果他们的顺序错误就把他们交换过来
+            function bubbleSort(arr) {
+                // arr.length - 1 是因为如果其他所有元素的位置都是正确的，那么剩余的那个元素的位置也应该是正确的
+                const count = arr.length - 1;
+
+                // 需要遍历的次数
+                for (let i = 0; i < count; i++) {
+                    // 每次将元素两两比较
+                    // j < count - i 的原因是，每次排序都会将最大值放到最后，所以不用比已经判断过的
+                    for (let j = 0; j < count - i; j++) {
+                        // 如果是arr[j] < arr[j + 1] 就是倒冒泡
+                        if (arr[j] > arr[j + 1]) {
+                            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        }
+                    }
+                    console.log(`第${i}次内部执行${count - i}次`);
+                    console.log(`第${i}次 ->`, arr);
+                }
+            }
+            const arr = [9, 1, 3, 2, 8, 0, 5, 7, 6, 4];
+            bubbleSort(arr);
+        </script>
+    </body>
+</html>

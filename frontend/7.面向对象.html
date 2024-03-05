@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- <script>
+            // 面向对象：将现实事物抽象为一个对象表示
+            // 一.对对象属性操作的控制：属性描述符
+            // 如果想对一个属性做精准的操作，就需要使用属性描述符。
+            // 通过属性描述符 可以精准的添加或修改对象的属性。
+            // 属性描述符需要使用Object.defineProperty来对属性进行添加或修改.
+            // 语法：Object.defineProperty(obj(对象), property（属性）, {}(属性描述符))
+            // 返回值：修改后的对象
+            const obj = {
+                name: 'polarbear',
+                age: 18,
+            };
+
+            // 获取属性
+            // console.log(`output->obj.name`, obj.name);
+
+            // 给属性赋值
+            // obj.age = 28;
+
+            // 删除属性
+            // delete obj.age;
+            // console.log(`output->obj`, obj);
+
+            // 属性描述符有很多属性，大致可分为两种：
+            // 对象中存在的属性描述符有两种主要类型：数据描述符和访问器描述符。
+            // 数据描述符是一个具有可写或不可写值的属性。
+            // 访问器描述符是由 getter/setter 函数对属性的描述。
+            // 描述符只能是这两种类型之一，不能同时为两者。
+
+            // 1.数据属性 描述符（数据描述符）(Data Properties Descriptor): value, configurable， enumerable, writable
+            //
+            // 2.存取属性 描述符（访问器描述符）（Accessor(访问器) Properties Descriptor）:configurable, enumerable, get, set
+
+            //    1.[[configurable]]：表示属性是否可以通过delete删除属性，或者是否可以修改该属性的属性描述符。
+            //      当直接在一个对象上定义某个属性时，这个属性的[[configurable]]默认为 true。
+            //      当使用属性描述符定义一个属性时，这个属性的[[configurable]]默认为 false。
+
+            //    2.[[enumerable]]：表示属性是否可以通过 for-in 或 Object.keys()返回该属性（是否可被枚举）。
+            //      当直接在一个对象上定义某个属性时，这个属性的[[enumerable]]默认为 true。
+            //      当使用属性描述符定义一个属性时，这个属性的[[enumerable]]为 false。
+
+            //    3.[[writable]]：表示是否可以修改属性的值： --- 数据属性描述符独有
+            //      当直接在一个对象上定义某个属性时，这个属性的[[writable]]默认为 true。
+            //      当使用属性描述符定义一个属性时，这个属性的[[writable]]默认为 false。
+
+            //    4.[[value]]：属性的value值，读取属性时会返回该值，修改属性时，会对该值进行修改。--- 数据属性描述符独有
+            //      默认情况下都为undefined。
+
+            //    5.[[get]]: 获取属性时会执行的函数，默认的undefined --- 存取属性描述符独有
+
+            //    6.[[set]]: 设置属性时会执行的函数，默认为undefined --- 存取属性描述符独有
+
+            // 使用 数据属性描述符 添加属性(属性描述符是一个对象)
+            Object.defineProperty(obj, 'height', {
+                value: 1.7, // 属性值
+                enumerable: true,
+                configurable: true,
+                writable: true,
+            });
+            // console.log(`output->`, obj);
+
+            // 使用 存取属性 描述符（访问器描述符）添加属性
+            // 作用：
+            // 1.隐藏某一个私有属性，不希望直接被使用或赋值。
+            // 2.如果希望截获某个属性访问和设置值的过程时，也会使用存取属性描述符（vue2响应式）
+            // vue2响应式，通过遍历data返回的对象，将每个属性都通过Object.defineProperty(obj, key, {})截取getter和setter
+            // 在getter收集依赖，在setter更改时，将所有的依赖的方法重新执行一遍（通知依赖进行更改）。
+
+            Object.defineProperty(obj, 'belong', {
+                configurable: true,
+                enumerable: true,
+                get() {
+                    console.log('getter执行了');
+                    return this.name;
+                },
+                set(val) {
+                    this.name = val;
+                    console.log('setter执行了');
+                },
+            });
+            console.log(`output->`, obj.belong);
+            obj.belong = 'xxx';
+            console.log(`output->`, obj);
+
+            // 同时定义多个属性的属性描述符 --- Object.defineProperties()
+            // 语法：Object.defineProperties(obj, {prop: descriptor, ....})
+
+            // 二.对象方法的补充
+            // 1.获取对象的属性描述符:Object.getOwnPropertyDescriptor()和Object.getOwnPropertyDescriptors()
+            console.log(Object.getOwnPropertyDescriptor(obj, 'belong'));
+            console.log(Object.getOwnPropertyDescriptors(obj));
+
+            // 2.禁止对象添加新属性： Object.preventExtensions(obj)
+            // Object.preventExtensions(obj);
+            // obj.newKey = '111';
+            // console.log(obj);
+
+            // 3.禁止对象配置/删除里面的属性（即将属性描述符的configurable设置为false）: Object.seal(obj)
+            // Object.seal(obj);
+            // delete obj.name;
+            // console.log(obj);
+
+            // 4.让属性不可以修改(即将属性描述符的writable设置为false): Object.freeze(obj)
+            // Object.freeze(obj)
+            // obj.name = '111';
+            // console.log(obj);
+
+            // 4.创建新对象，并将新对象的原型指向obj: Object.create(obj)
+        </script> -->
+
+        <!-- <script>
+            // 创建对象的方案 --- 工厂模式
+            // 工厂模式是一种常见的设计模式。
+            // 通常会有一个工厂方法，通过该工厂方法 可以产生想要的对象。
+
+            // 缺点：无法精准获取对象的类型。
+            // 创建person的工厂函数。
+            function createPerson(name, age, height, weight) {
+                return {
+                    name,
+                    age,
+                    height,
+                    weight,
+                    walk() {
+                        console.log(this.name + ` is running`);
+                    },
+                };
+            }
+
+            // 创建对象的方案 --- 构造函数
+            // 获取一个对象的具体类型：obj.__proto__.constructor.name
+
+            // [[prototype]] --- 原型
+            // 定义：每个对象都有一个 [[prototype]] 属性，这个属性可以称之为对象的原型（隐式原型）。
+            // [[prototype]] 是ECMA规范里的名字，实际上浏览器实现是用__proto__来让我们可以查看到这个属性。
+            // 但由于各个浏览器实现的不同，可能某个浏览器没有 __proto__ 这个属性。
+            // 因此 ES5 之后，ECMA提供了 Object.getPrototypeOf(obj) 来获取对象的原型。
+            // Object.getPrototypeOf(obj);
+
+            // 因此 ES5 之后，ECMA提供了 Object.setPrototypeOf(obj, prototypeObj) 来设置对象的原型。
+            // Object.getPrototypeOf(obj, prototypeObj); // 将 prototypeObj 设置为 obj 的原型
+
+            // 函数的原型
+            // 函数也是对象，所以它也有[[prototype]]（隐式原型） --- 来自 Function() 构造函数（来自它的父类）
+            // 除此之外，函数还会多出来一个 显式原型属性 fn.prototype。（ECMA标准）(为它的子类使用)
+
+            // 一个对象的 [[prototype]] 会在new创建过程中 指向该对象构造函数的 prototype 属性。
+            function Person(name, age) {
+                this.name = name;
+                this.age = age;
+            }
+            Person.prototype.eating = function () {
+                console.log('eating');
+            };
+            // var p1 = new Person('a', 1);
+            // var p2 = new Person('b', 2);
+            // 获取原型对象的属性、方法。
+            // 1. constructor：指向构造函数本身。
+            // console.log(Object.getOwnPropertyDescriptors(Person.prototype));
+
+            // 实现继承
+            function Stu(name, age, sno, school) {
+                Person.call(this, name, age);
+                this.sno = sno;
+                this.school = school;
+            }
+            // 将Stu的原型对象指向Person的原型对象.即相当于 Stu.prototype.__proto__ = Person.prototype
+            // Stu.prototype = Object.create(Person.prototype);
+
+            // Object.defineProperty(Stu.prototype, 'constructor', {
+            //     enumerable: false,
+            //     configurable: true,
+            //     writable: true,
+            //     value: Stu,
+            // });
+            inheritProperty(Stu, Person);
+
+            Stu.prototype.study = function () {
+                console.log('studing');
+            };
+            const newStu = new Stu('11', 18, '1508324029', 'htu');
+            console.log('newStu ->', newStu);
+
+            // 封装一个继承原型的工厂函数
+            function inheritProperty(childClass, parentClass) {
+                childClass.prototype = Object.create(parentClass.prototype);
+
+                Object.defineProperty(childClass.prototype, 'constructor', {
+                    enumerable: false,
+                    configurable: true,
+                    writable: true,
+                    value: Stu,
+                });
+            }
+
+            // 注意点：
+            // 所有函数（包括内置的构造函数和自定义的函数）的 __proto__ 属性都指向 Function的 prototype 属性（包括Function自身的）
+        </script> -->
+
+        <script>
+            // 类（其实算是构造函数的语法糖）
+
+            // 类的声明
+            class Person {
+                // 私有属性
+                // Private field '#address' must be declared in an enclosing class
+                #address = '';
+
+                // 静态属性(static定义，直接定义在Person上)
+                static prototypeAttr = 'Belong to Person';
+                // 类的构造函数（一个类只能有一个）
+                constructor(name, age, address) {
+                    this.name = name;
+                    this.age = age;
+                    this.#address = address;
+                }
+
+                // 类的实例方法 - 相当于放在构造函数的 prototype 对象上
+                eating(name) {
+                    console.log(`${this.name} is eating`);
+                }
+
+                // 类的访问器方法：（一般用在对私有属性的操作）
+                // 拦截访问操作
+                get address() {
+                    return this.#address;
+                }
+                // 拦截设置操作
+                set address(val) {
+                    this.#address = val;
+                }
+
+                // 定义静态方法（定义在Person本身）
+                static getSrc() {
+                    console.log(this.prototypeAttr);
+                }
+
+                parentMethod() {
+                    console.log('from parent class !');
+                }
+
+                static parentStaticMethod() {
+                    console.log('parentStaticMethod');
+                }
+            }
+
+            // 类的继承
+            class Stu extends Person {
+                constructor(name, age, address, sno) {
+                    // super 即为调用父类的构造函数(super就相当于父类的constructor，该传的参数也需传给super)
+                    // super 的使用位置有三个：父类的构造函数、实例方法、父类静态方法
+                    // 子类的构造函数，构造函数的第一行代码必须为 super()
+                    super(name, age, address); // 用法一:父类的构造函数
+                    this.sno = sno;
+                }
+
+                // 方法重写 - 实例方法：
+                parentMethod() {
+                    super.parentMethod(); // 用法二：调用父类实例方法（super在此处相当于父类实例）
+                    console.log('sub class extends parent and change it ');
+                }
+
+                // 方法重写 - 静态方法：(不重写也可以用子类调用父类的静态方法)
+                static parentStaticMethod() {
+                    super.parentStaticMethod(); // 用法三：调用父类静态方法（super在此处相当于父类本身）
+                    console.log('subStaticMethod');
+                }
+            }
+            const stu = new Stu();
+            console.log(Stu.parentStaticMethod());
+
+            // 一. 类的特点
+            // 1.类也与构造函数一样有 prototype（显示原型）
+            // console.log(Person.prototype);
+            // console.log(typeof Person); // function
+            // console.log(Object.toString.call(Person)); // class Person {}
+
+            // const p1 = new Person('polarbear', 18, 'beijing');
+            // for (const item in p1) {
+            //     console.log(item); // 没能遍历出 #address
+            // }
+            // console.log(p1);
+
+            // 类的混入 mixin --- js并没有专门的mixin关键字实现，此处实现是模拟mixin实现混入效果
+            // js中类的继承是单继承，即只能有一个父类
+
+            // 方案一：借助一个工具函数,生成继承后的新类
+            // 需要混入什么东西，就编写对应的工具函数
+            const mixinExports = (baseClass) => {
+                class newStu extends baseClass {
+                    player() {
+                        console.log('I am exports player!');
+                    }
+                }
+                return newStu;
+            };
+        </script>
+    </body>
+</html>

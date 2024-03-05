@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // with 代码块  --- 已从web标准中移除，不推荐使用
+            // 作用：扩展一个语句的作用域链（官方解释），看一般使用就是将一个对象当做值放在一个代码块里，with语句可以形成自己的作用域
+            // 语法：
+            // with(expression) { statement }
+
+            const info = {
+                a: 1,
+                b: 'b',
+            };
+
+            with (info) {
+                // 将 对象info 的内容作为最内层作用域了
+                console.log('取到的值为info对象中的a属性的值：', a);
+
+                // console.log(b); // 依旧会有暂时性死区的特性
+                const b = 'xx';
+                console.log('取到的值是新定义的变量 b 的值：', b);
+            }
+
+            // eval():一个特殊的函数，可以将传入的字符串当做js代码来运行。（不建议用）
+            // 语法: eval(string)
+            // 缺点：
+            // 1.代码可读性差
+            // 2.因为是字符串,那么有可能在执行过程中被篡改,有被攻击的风险
+            // 3.eval()的执行必须经过解释器，不能被js引擎优化
+        </script>
+
+        <script>
+            // 严格模式
+            'use strict';
+        </script>
+    </body>
+</html>

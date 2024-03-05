@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>异常处理</h1>
+        <script>
+            // ES3开始，js也提供了类似的异常处理机制try-catch，即使执行过程中出现了异常，
+            // 也可以让程序具有一定的异常恢复能力.
+
+            // 1. try - catch - finally
+            // 作用：
+            // 如果没有使用try-catch 对代码进行错误处理，
+            // 程序运行中一旦发生错误，则执行环境就会抛出(throw)错误，并中断程序执行
+
+            // 如果使用 try - catch 对可能发生错误的代码进行包裹，
+            // 即使被try语句包裹的代码发生错误，error也只是被catch所捕获，不会影响后续代码的执行
+
+            // 语法：
+            // try {
+            //     // 将可能发生错误的代码放在这里
+            // } catch (error) {
+            //      // 2.在执行catch中的代码之前，js引擎会首先根据错误类型自动创建一个错误，
+            //      // 并通过catch后面的参数传递到catch中。不同浏览器创建的error对象不同，
+            //      // 但它们都包含一个message属性，值是这个错误的一些信息。
+
+            //      // error 为捕获到的错误对象，未发生错误则不执行
+
+            // } finally {
+            //     // 不管有没有错误最终都会执行的代码
+            // }
+
+            (() => {
+                // 使用try-catch捕获错误
+                try {
+                    console.log('success output');
+                    console.log(a);
+                    console.log('cause error, not output');
+                } catch (error) {
+                    console.log(error);
+                    return;
+                } finally {
+                    // 上述发生错误也正常执行
+                    console.log('always executor');
+                }
+                // 因为在catch中return了，函数执行完毕，此处不再输出
+                console.log('on the after of try and catch, normal run');
+            })();
+
+            (() => {
+                // 不使用try-catch捕获错误
+                console.log('success output');
+                console.log(a); // 程序在此终止执行，并抛出错误（相当于 throw new Error('error')的效果）
+                // 后续代码无法执行
+                console.log('cause error, not output');
+            })();
+
+            // throw关键字：主动抛出异常（作用相当于程序运行中出现了一个错误）
+        </script>
+    </body>
+</html>

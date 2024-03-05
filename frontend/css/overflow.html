@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .box__outer {
+                width: 200px;
+                height: 200px;
+                background-color: tomato;
+                overflow: auto;
+            }
+            /* 当子元素大小超过父元素内容区域（content）时，子元素会从父元素溢出（overflow） */
+            .box__inner {
+                width: 50px;
+                height: 250px;
+                background-color: #bfa;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box__outer">
+            <div class="box__inner"></div>
+        </div>
+        <script>
+            // overflow：css中通过overflow处理溢出的内容
+            // 1. visible：默认值，溢出的元素直接在元素之外的位置显示
+            // 2. hidden：隐藏溢出的元素
+            // 3. scroll：生成滚动条，通过滚动条来查看完整内容（水平垂直都有）
+            // 4. auto：根据需要生成滚动条（看水平垂直哪里溢出）
+        </script>
+    </body>
+</html>

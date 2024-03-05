@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 首先确立一个观念：网页的一切都是对象
+
+            // DOM（Document Object Model 文档对象模型)：Document 表示任何在浏览器中载入的网页，并作为网页内容的入口，也就是DOM 树。
+            // - DOM提供了JS操作网页内容的对象 --- document(代表整改网页)
+            // document 原型链(__proto__)
+            // document -> HTMLDocument -> Document(提供操作文档的各种属性和方法) -> Node（提供节点相关的属性和方法）-> EventTarget（提供事件相关的方法） -> Object -> null
+
+            // 元素节点对象（element）
+            //  - 在网页中，每一个标签都是一个元素节点
+
+            // 获取元素节点：（getElementByXX 或 getElementsByXX 需注意点）
+            // 1. 使用 getElementsByXX 获取到的元素节点，一个HTMLCollection的类数组结构。它会实时收集变化（新增删除元素节点）。
+
+            // 获取元素节点的方法不仅可以在document上调用，也可以在 某个元素节点上 调用
+
+            // 创建元素节点：
+            // createElement('tag')
+            const divEl = document.createElement('div');
+
+            // 每种元素节点的原型链都有区别：以div为例查看原型链
+            //  div -> HTMLDivElement(不同元素基本只有这个不同) -> HTMLElement -> Element -> Node -> EventTarget -> Object -> null
+
+            // 文本节点：通过元素节点的属性获取/修改文本节点   el.以下三个
+            // 1. textContent：直接获取元素文本（完全获取，连换行什么的都获取）
+            // 2. innerText：获取文本，且考虑样式（如果该元素上有display: none 之类的，将获取空值）
+            // 3. innerHTML：获取元素内所有元素及文本
+
+            // 修改文本节点内容
+            // el.xx = 'text'
+
+            // 属性节点：获取和修改
+            // 方式一：
+            // - 读取：el.attributeName ，如 el.id。
+            // (其中class属性要使用className来读取。当读取disabled这种布尔值类型的数据时，会返回true或false)
+
+            // - 修改：el.attributeName = attributeVal
+
+            // 方式二：
+            // - 读取：el.getAttribute(attributeName)
+            // - 修改：el.setAttribute(attributeName, attributeVal)
+            // - 移除：el.removeAttribute(attributeName)
+        </script>
+    </body>
+</html>

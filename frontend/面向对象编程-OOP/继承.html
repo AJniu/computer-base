@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 面向对象编程三大特性：
+            // 3. 继承 - js 中的继承是通过 extends 关键字实现的（go直接内嵌即可）
+
+            // 没有继承的情况下，两个类似的类
+            // class Dog {
+            //     #name;
+            //     constructor(name) {
+            //         this.#name = name;
+            //     }
+            //     get name() {
+            //         return this.#name;
+            //     }
+            //     set name(val) {
+            //         this.#name = val;
+            //     }
+
+            //     sayHello() {
+            //         console.log('wang');
+            //     }
+            // }
+
+            // class Cat {
+            //     #name;
+            //     constructor(name) {
+            //         this.#name = name;
+            //     }
+
+            //     get name() {
+            //         return this.#name;
+            //     }
+
+            //     set name(val) {
+            //         this.#name = val;
+            //     }
+            //     sayHello() {
+            //         console.log('miao miao miao');
+            //     }
+            // }
+
+            // 有继承的情况 - 最简单的理解，当一个类继承了另一个类，就相当于将父类的代码复制到子类中
+            // 继承发生时，被继承的类被称为父类（超类），继承的类称为子类
+            // 在子类中，可通过创建同名方法重写父类的方法
+            class Animal {
+                #name;
+                constructor(name) {
+                    this.#name = name;
+                }
+                get name() {
+                    return this.#name;
+                }
+                set name(val) {
+                    this.#name = val;
+                }
+                sayHello() {
+                    console.log('song');
+                }
+            }
+            class Dog extends Animal {
+                // 在子类中重写父类的方法
+                sayHello() {
+                    console.log('wang');
+                }
+            }
+
+            class Cat extends Animal {
+                // 重写构造函数
+                constructor(name, age) {
+                    // 重写构造函数时，构造函数的第一行代码必须为 super()
+                    super(name); // super 即为调用父类的构造函数(super就相当于父类的constructor，该传的参数也需传给super)
+
+                    this.age = age;
+                }
+                // 在子类中重写父类的方法
+                sayHello() {
+                    console.log('miao miao miao');
+                }
+                parentSayHello() {
+                    // 在子类的方法中也可以调用父类的方法
+                    super.sayHello(); // 在方法中可以使用 super 来引用父类的方法
+
+                    console.log('子类cat调用了父类Animal的sayHello方法');
+                }
+            }
+
+            const dog = new Dog('Wangcai');
+            const cat = new Cat('Tom', 3);
+
+            console.log('dog ->', dog);
+            console.log('cat ->', cat);
+        </script>
+    </body>
+</html>

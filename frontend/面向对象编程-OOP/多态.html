@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 面向对象编程三大特性：
+            // 2. 多态
+
+            class Person {
+                constructor(name) {
+                    this.name = name;
+                }
+            }
+
+            class Animal {
+                constructor(name) {
+                    this.name = name;
+                }
+            }
+
+            const p = new Person('Polar Bear');
+            const dog = new Animal('Boki');
+
+            // 定义一个函数，该函数接收一个对象作为参数，同时会输出hello并打印对象的name属性
+
+            /**
+             * 多态（Duck type）
+             *  - 在js中不会检查参数的类型，所以任何数据都可以作为参数
+             *  - 要调用某个参数，无需指定类型，只需满足某种条件即可
+             */
+            function sayHello(obj) {
+                console.log(`hello, ${obj.name}`);
+            }
+        </script>
+    </body>
+</html>

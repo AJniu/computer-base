@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 伪类选择器：特殊的类，用来表示元素的状态。
+            // 伪类使用 冒号(:)开头。
+            // 参考：https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes
+
+            // a标签的伪类： link 与 visited 为 a 标签独有
+            // a:link {} --- 正常状态下(未访问过)的 a 链接
+            // a:visited {} --- 访问过的 a 链接（由于隐私原因，它只能改变字体颜色）
+            // a:hover {} --- 鼠标移入（悬浮）的状态 （任意元素都可以设置）
+            // a:active {} --- 鼠标点击时的状态（任意元素都可以设置）
+
+            // 结构伪类：
+            // :root {} --- 根元素（html 元素）
+            // :empty {} --- 空元素（标签内什么都没有的元素）
+            // :first-child {} --- 第一个子元素
+            // :last-child {} --- 最后一个子元素
+            // :nth-child(m) {} --- 第m个子元素（m 指一个具体数字。如果参数是 n，则代表所有。用法多样，查看文档。）
+            // :nth-last-child(m) {} --- 倒数第m个子元素（m 指一个具体数字。如果参数是 n，则代表所有。用法多样，查看文档。）
+
+            // 否定伪类：
+            // :not(选择器) {} --- 出参数中的所有值。如：p:not(.p1) 表示除了class为p1的所有p元素
+        </script>
+    </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // async - await
+            // async：在js中，可以通过async关键字来快速的创建异步函数
+            // 特点：
+            //  1. async 声明的异步函数，它的返回值会自动包装为Promise对象
+            //  2. async 声明的异步函数中可以使用 await 来调用其他异步函数
+
+            // 注意：如果async声明的函数中没有写await，那么它里边的代码会同步依次执行。
+            // 即async声明的异步函数，await前的代码是按正常同步代码执行顺序执行的。
+            // const cl = (val) => {
+            //     setTimeout(() => {
+            //         console.log(val);
+            //     }, 1000);
+            // };
+
+            // const fn = async () => {
+            //     console.log(1);
+            //     await cl(2);
+            //     await cl(3);
+            // };
+            // fn();
+            // console.log(4);
+
+            // await: 调用异步函数时,可以直接在函数前使用await关键字来对其进行调用
+            // （await后的异步函数返回的结果不再是Promise对象，而是将Promise对象中存储的值返回（PromiseResult））
+            // 特点:
+            //  1. 调用 await, 他会等待Promise执行出结果后将结果(不再是Promise对象)返回,可以通过变量来接收结果.
+            //  2. await使用的位置：
+            //      2.1：async 声明的异步函数中
+            //      2.2：可以在模块的顶级作用域中使用await
+            // 注意：await 并不是将异步函数改为同步函数。只是改变了异步函数的调用方式。
+            // await阻塞的只是异步函数内部的代码，不会影响外部代码。
+
+            // 当使用await调用函数后，当前函数后边的所有代码会在当前函数执行完毕后，被放入到微任务队列中。
+
+            const fn = async () => {
+                await console.log(1);
+                // await 后所有代码都会被放入到微任务队列中
+                await console.log(2);
+                await console.log(3);
+            };
+            fn();
+            console.log(4);
+            Promise.resolve('promise').then((r) => console.log(r));
+
+            // await 代码出现异常时，使用 try catch处理问题
+            // try {
+            //     const res = await fn()
+            // } catch (error) {
+            //     console.log(error)
+            // }
+        </script>
+    </body>
+</html>

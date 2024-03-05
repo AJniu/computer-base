@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 正则表达式
+            //  - 正则表达式用来定义一个规则
+            //  - 通过这个规则计算机可以检查一个字符串是否符合规则
+            //  - 或者将字符串中符合规则的内存提取出来
+
+            // 创建正则表达式
+            // 1. 使用RegExp构造函数创建，RegExp 接收两个参数: （优势：pattern的值可以是变量，生成动态正则）
+            // pattern： 正则表达式
+            // 匹配模式
+            const reg = new RegExp('a', 'i');
+            console.log(reg);
+
+            // 2. 使用字面量创建,形式为: /正则/匹配模式  （推荐方式 - 需动态创建正则表达式除外）
+            const regE = /a/i;
+            console.log(Object.prototype.toString.call(regE));
+
+            // 正则表达式规则: (以x，y代表任意值)
+            //  /x/ - 匹配值 x,  调用 test(val) 方法，则判断 val 中是否含有 x
+            // /x|y/ - 匹配值 x 或 值 y， 调用 test(val) 方法，则判断 val 中是否含有 x 或 y
+            //  [] : 也表示或 （字符集）
+            //      [a-z] 任意的小写字母
+            //      [A-Z] 任意的大写字母
+            //      [a-zA-Z] 任意字母
+            //      [0-9] 任意数字
+            // [^]: [] 内 ^ 表示 除了此字符集，如 [^x] 表示除了 x 都可以
+
+            // （.）: 点表示 除了换行符（\n 有 \r） 都可以
+
+            //  其他字符集
+            //  - 常见字符类: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
+            //  - \w: 任意单词字符，等价于 [a-zA-Z0-9_]
+            //  - \W: 除了任意单词字符，等价于 [^a-zA-Z0-9_]
+            //  - \d: 任意数字，等价于 [0-9]
+            //  - \D: 除了数字，等价于 [^0-9]
+            //  - \s: 匹配单个空白字符，包括空格、制表符、换页符、换行符和其他 Unicode 空格。相当于 [\f\n\r\t\v\u0020\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]
+            //  - \S: 匹配除空格以外的单个字符
+
+            // 开头和结尾
+            // - ^: 表示正则表达式的开头， 如 /^a/,匹配开头位置的 a
+            // - $: 表示字符车的结尾,  如 /a$/,匹配结束位置的 a
+            // 一个正则以 ^ 开头， $ 结尾，就代表完全匹配模式，必须完全一致才匹配。
+            // 如/^a$/ 就表示只匹配 'a'，连 'aa' 都不行。 /^abc$/ 表示只匹配 'abc'
+
+            // 量词：（量词只对前面的字符起作用）
+            // - {m}：表示正好 m 个，如： /^[a-z]{3}$/ 任意三个小写字母
+            // - {m, } : 表示 至少 m 个 以上： 如： /^\w{2,}$/ 任意两个及两个以上的单词字符
+            // - {m, n} : 表示 m 到 n 个（包含m和n）
+            // - + ：表示一个以上，相当于{1,}
+            // - * : 表示任意数量，相当于{0,}
+            // - ? : 表示0或1个，相当于{0,1}
+            const noA = /[^a]/;
+            console.log(noA.test('A'));
+
+            // 匹配模式
+            // i : 表示忽略大小写
+            const xOry = /x|y/;
+            // console.log(xOry.test('x'));
+
+            // g : 全局匹配，匹配到所有符合规则的字符串
+
+            // 编写正则的方法：用语言描述出规则，然后用正则符号替换
+        </script>
+    </body>
+</html>

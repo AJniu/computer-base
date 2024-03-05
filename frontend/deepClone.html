@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 深拷贝和浅拷贝是因为，当给变量赋值给一个对象时，其实变量的值是对象在堆内存的地址。
+            // 所以浅拷贝就是将 地址 赋值给另一个变量，而深拷贝则是将 地址的内容 赋值一份，生成一个新地址赋值给变量.
+
+            // 1. 浅拷贝（shallow copy)
+            // -- 通常对对象的拷贝都是浅拷贝
+            // -- 浅拷贝只会对对象的浅层进行复制（只复制一层）
+            // -- 浅拷贝只会对对象本身（对象的内存地址）进行复制，不会复制对象中的属性/或元素
+
+            // 常见的浅复制方法
+            // 1. 展开运算符（...obj)
+            // 2. Object.assign({}, obj): 将后边对象中的属性复制当前边对象中，并将前边的对象作为返回值返回
+
+            const arr = [{ name: 'a' }, { name: 'b' }, { name: 'c' }];
+
+            const shallowArr = arr.slice(); // 浅拷贝，修改shallowArr的索引不会影响 arr， 但修改shallowArr索引中的name 属性会影响arr
+
+            // 2. 深拷贝（deep copy）
+            // -- 不仅复制对象，还复制对象中的属性/元素
+
+            // 通过JSON实现深拷贝时，方法不能拷贝
+
+            // 1. structuredClone()方法：ES6新特性，专门用来深拷贝
+            const deepArr = structuredClone(arr);
+
+            // 自己写的deepCloe
+            const getType = (val) => {
+                return Object.prototype.toString
+                    .call(val)
+                    .split(' ')[1]
+                    .slice(0, -1);
+            };
+            const deepClone = (obj, target = {}) => {
+                for (const item in obj) {
+                    const res = getType(obj[item]);
+                    switch (res) {
+                        // 如果obj属性的值是对象，则需要对该值进行deepClone
+                        case 'Object':
+                            target[item] = {};
+                            deepClone(obj[item], target[item]);
+                            break;
+                        // 如果obj属性的值是数组，则需要根据情况判断
+                        case 'Array':
+                            target[item] = [];
+                            const len = obj[item].length;
+                            // 对数组的每个值进行判断
+                            for (let i = 0; i < len; i++) {
+                                const itemType = getType(obj[item][i]);
+
+                                if (itemType === 'Object') {
+                                    // 如果数组的值是对象，将目标对应的值设置为空对象，同时进行deepClone
+                                    target[item][i] = {};
+                                    deepClone(obj[item][i], target[item][i]);
+                                } else if (itemType === 'Array') {
+                                    // 如果数组的值是对象，将目标对应的值设置为空对象，同时进行deepClone
+                                    target[item][i] = [];
+                                    deepClone(obj[item][i], target[item][i]);
+                                } else {
+                                    target[item][i] = obj[item][i];
+                                }
+                            }
+                            break;
+                        default:
+                            target[item] = obj[item];
+                            break;
+                    }
+                }
+            };
+            const obj = {
+                a: 1,
+                b: { c: 2, s: [3, 4, 6] },
+                d: [
+                    2,
+                    'string',
+                    () => {
+                        console.log(111);
+                    },
+                    { x: 11 },
+                ],
+            };
+            const depObj = {};
+            deepClone(obj, depObj);
+            console.log('depObj', depObj);
+
+            const deepCloneSim = (srcObj) => {
+                // 通过构造函数指向判断深拷贝的是数组还是对象
+                const resObj = srcObj.constructor === Array ? [] : {};
+                // 通过 for in 循环遍历源对象（for in 不仅可以遍历对象，也可遍历数组，遍历数组时 key 是索引）
+                for (let key in srcObj) {
+                    // 判断是否为自身属性
+                    if (Object.hasOwn(srcObj, key)) {
+                        // 如果值不如null，且类型为数组或对象，递归调用deepClone
+                        if (srcObj[key] && typeof srcObj[key] === 'object') {
+                            resObj[key] = deepCloneSim(srcObj[key]);
+                        } else {
+                            // 如果为基本数据类型，则直接复制
+                            resObj[key] = srcObj[key];
+                        }
+                    }
+                }
+                return resObj;
+            };
+        </script>
+    </body>
+</html>

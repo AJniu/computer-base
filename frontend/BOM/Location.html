@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <button id="btn">location redirection</button>
+        <script>
+            // Location：浏览器地址栏信息
+            // 参考：https://developer.mozilla.org/en-US/docs/Web/API/Location
+            // - 可以直接将location的值修改为新地址，这样会发生网页跳转（相当于location.href = url）
+            // - location.href：获取/修改完整地址
+            const btn = document.getElementById('btn');
+            btn.addEventListener('click', (e) => {
+                location = 'https://www.bing.com';
+            });
+        </script>
+    </body>
+</html>

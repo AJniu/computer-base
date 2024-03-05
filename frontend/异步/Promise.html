@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 同步与异步
+            // 同步：按顺序从上往下执行
+            // 异步：js中主要是基于事件和回调函数实现异步的
+
+            // AJAX（async js and xml）：js中早期发送异步请求的方式（现在基本不用了）
+            // 参考：https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX
+
+            // 模拟异步
+            // const ajaxFn = (cb) => {
+            //     // 使用计时器，模拟异步
+            //     setTimeout(() => {
+            //         console.log('before');
+            //         cb('val from ajaxFn setTimeout');
+            //     }, 1000);
+
+            //     console.log('after');
+            // };
+            // ajaxFn((val) => {
+            //     console.log('ajaxFn cb output -> ', val);
+            // });
+
+            // 为解决传统依赖事件和回调函数的问题（回调地狱问题），出现了Promise、async - await 等方法
+
+            // Promise 是js推出的一个 专门用来存储异步代码的 新对象，它可以确保异步代码的执行和结果的返回。
+
+            // 创建一个Promise对象：它需要一个回调函数作为参数，可以将需要它来执行的代码编写到函数中
+            // Promise 的回调函数中，可以指定两个参数 resolve 和 reject
+            // resolve：在代码正常执行是，将Promise状态（PromiseState）设置为 fulfilled（已履行，已完成），
+            // 并将 resolve 的参数作为结果，设置为Promise的结果（PromiseResult）。
+
+            // reject(可选，即使不写也会自动调用)：在代码出现异常时，将Promise状态（PromiseStatus）设置为 rejected (已拒绝)，
+            // 并将 reject 的参数作为结果，设置为Promise的结果（PromiseResult）。
+            const pro = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // 设置返回值
+                    resolve('fulfilled PromiseStatus -> all is ok'); // 放开此注释，3秒后再控制台查看 pro 对象为 fulfilled 状态
+                    // reject('reject PromiseStatus -> have a mistake'); // 放开此注释，3秒后再控制台查看 pro 对象为 rejected 状态
+                }, 3000);
+            });
+            // console.log(`init PromiseStatus ->`, pro); // 此时打印的是初始状态的 Promise对象
+
+            // 读取Promise中的返回值
+            // 当Promise中的代码正常执行时（resolve执行完毕时），会自动通过 then()方法的回调函数来返回结果
+            // 其中 result 就是 PromiseResult 的值
+            // 链式调用时，前一个 then方法回调函数中return的返回结果，会做为下一个then方法 回调函数的参数值
+
+            // 当Promise中发生异常或通过reject主动抛出时，会自动通过 catch()方法的回调函数来处理结果
+            // pro.then((result) => {
+            //     console.log(result);
+            // }).catch((e) => {
+            //     console.log(e);
+            // });
+
+            // 精讲：
+            // Promise：为解决异步中回调函数的问题而产生
+            // Promise 是一个构造函数，它会创建一个Promise对象
+            // Promise对象有着一套特殊的存储数据的方式，可以使它存储异步调用的结果（PromiseResult）。
+            // 特殊的存储数据的方式指的是无法像对象一样直接添加或读取属性值。
+
+            // 1. 创建Promise对象：
+            //  创建Promise对象时，构造函数需要一个执行函数（executor）作为参数。
+            //  它会在创建Promise时调用，并且调用时会有resolve和reject这两个回调函数参数传递进去。
+            const promiseObj = new Promise((resolve, reject) => {
+                // resolve 和 reject 这两个函数向Promise对象中存储数据。（存储到PromiseResult中）
+                // resolve 在执行正常时存储数据。 reject 在执行异常时存储数据。
+
+                // 通过函数向Promise中添加数据，好处是可以用来添加异步调用的数据。
+                resolve('normal, fulfilled');
+            });
+
+            // console.log(promiseObj);
+
+            // 从Promise中读取数据
+            //  - 可以通过Promise的实例方法then来读取Promise中存储的数据
+            //   then()方法需要两个回调函数作为参数，回调函数用来获取Promise中的数据
+            //      通过resolve存储的数据，会调用第一个函数返回（在此函数中编写处理数据的代码）
+            //      通过reject存储的数据或者出现异常时，会调用第二个函数返回（在此函数中编写处理异常的代码）
+            promiseObj.then(
+                (res) => {
+                    // 此函数对应onfulfilled状态对应的处理，获取resolve存储的数据
+                    console.log(res);
+                },
+                (err) => {
+                    // 此函数对应onrejected状态对应的处理，获取reject存储的数据
+                    console.log(err);
+                }
+            );
+
+            // Promise维护了两个隐藏（私有）属性：
+            //  1. PromiseResult：用来存储数据
+            //  2. PromiseState：记录Promise的状态（状态一旦更改不会改变 - 只能修改一次）
+            //      pending：存储中（初始化状态/进行中）
+            //      fulfilled：完成（履行）
+            //      rejected：拒绝（出错了）
+
+            // 流程：
+            //  当Promise创建时，PromiseState初始值为pending。
+            //  当通过resolve存储数据时，PromiseState 变为 fulfilled（已履行，已完成），PromiseResult变为resolve存储的数据。
+            //  当通过reject存储数据或出错时，PromiseState 变为 rejected 拒绝（出错了）,PromiseResult变为reject存储的数据或异常对象。
+
+            //  当通过then方法读取数据时，相当于Promise设置了回调函数。（可以把这两个想象成监听了onfulfilled和onrejected两个事件，两个事件分别调用两个回调函数）
+            //      如果PromiseStatus为fulfilled时，则调用then的第一个回调函数来返回数据
+            //      如果PromiseStatus为rejected时，则调用then的第二个回调函数来返回数据
+
+            // 返回值: Promise中的 then,catch,finally这三个方法都会返回一个新的Promise. 此Promise中会存储(then/catch的，finally的不会)回调函数的返回值.
+
+            // 链式调用：对Promise进行链式调用时，后边的方法（then和catch）读取的是上一步的执行结果。
+            // 如果上一步的执行结果不是当前想要的结果，则跳过当前的方法（正常返回数据时跳过catch方法，异常时跳过then方法）
+
+            // 异常：当Promise出现异常，而整个调用链中没有出现catch时，则异常会向外抛出
+        </script>
+    </body>
+</html>

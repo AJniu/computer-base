@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 对象的结构
+            // 对象存储属性的区域实际上有两个
+            // 1. 一个是对象自身的区域
+            //      - 直接通过对象所添加的属性（obj.property = xx）,位于对象自身
+            //      - 在类中通过 x = y 的形式添加的属性，位于对象自身（如下方的this.name = age 和 addr = "Beijing"）
+            //      - 每个对象都会有一个 __proto__ 属性，它指向该对象的 原型对象 （即指向 类 或 构造函数 的 prototype属性)。
+            //          以下方为例，可通过 p.__proto__ === Person.prototype 验证。
+            // 2. 原型对象(prototype)
+            //      - 原型对象其实就是 类 或 构造函数的 prototype 属性。
+            //      - 会添加到原型对象上的情况
+            //          - 1.在类中通过 xx() {} 方式添加的方法，位于原型中
+            //          - 2. 主动向原型中添加的属性或方法
+            //      - 原型对象也有自身的原型，直到最终点 null（Object对象的原型没有原型，所以返回null）。这样就构成了一条原型链。
+
+            //  对象属性访问顺序
+            //          当访问一个对象的属性时，会有限在对象自身找，找到即返回，找不到则向对象的原型对象上找。
+            //          若原型对象找不到，则在原型对象的 __proto__（原型对象）上找，知道找到，或 返回 undefined
+
+            // 对象的内存结构与 __proto__ 参考：
+            // https://boardmix.cn/app/share/CAE.CPHP2QwgASoQvw4uGhjnjNfextn51dJs3TAGQAE/vrMocS，点击链接加入boardmix中的文件「对象的结构-proto」
+
+            class Person {
+                #addr = 'Beijing';
+                constructor(name) {
+                    this.name = name;
+                }
+
+                // 会存储到原型对象（prototype）上
+                sayHello() {
+                    console.log('hello');
+                }
+                // 会存储到原型对象（prototype）上
+                get addr() {
+                    return this.#addr;
+                }
+                // 会存储到原型对象（prototype）上
+                set addr(val) {
+                    this.#addr = val;
+                }
+            }
+            const p = new Person('polar bear');
+
+            // 访问对象的原型对象(以上述对象p为例)
+            //  - 1. Object.getPrototypeOf(obj) (官方推荐)
+            //  - 2. obj.__proto__  (不推荐)
+            console.log(Object.getPrototypeOf(p) === p.__proto__);
+
+            // 原型对象中的数据
+            //  - 1. 对象中的数据
+            //  - 2. constructor (对象的构造函数，以 p 为例，就是 Person 类)
+
+            // js 的继承就是通过原型实现的
+            // - 当继承时，就是将子类的 prototype的 __proto__ 属性指向父类的 prototype（以下为例 Cat.prototype.__proto__ === Animal.property)
+            class Animal {
+                name = 'aaa';
+                // constructor(name) {
+                //     this.name = name;
+                // }
+            }
+
+            class Cat extends Animal {}
+            const cat = new Cat();
+        </script>
+    </body>
+</html>

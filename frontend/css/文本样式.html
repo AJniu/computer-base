@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            p {
+                /* 文本水平对齐方式 */
+                text-align: justify;
+                text-indent: 16px;
+                text-decoration: underline;
+            }
+
+            .outer {
+                width: 200px;
+                height: 200px;
+                background-color: #fba;
+                text-align: center;
+            }
+            .inner {
+                /* 当display为inline-block时，text-align生效 */
+                display: inline-block;
+                /* 当display为inline-block时，margin: auto失效 */
+                /* margin: auto; */
+                width: 50px;
+                height: 50px;
+                background-color: tomato;
+            }
+            .over {
+                width: 300px;
+                background-color: tomato;
+                /* 禁止文字自动换行 */
+                white-space: nowrap;
+                /* 禁止文本溢出 */
+                overflow: hidden;
+                /* 溢出文字显示为省略号 */
+                text-overflow: ellipsis;
+            }
+
+            .vertical {
+                font-size: 30px;
+                text-decoration: none;
+                border: 1px solid red;
+            }
+            .vertical-child {
+                font-size: 16px;
+                /* 设置垂直方向对齐方式 */
+                vertical-align: top;
+                border: 1px solid tomato;
+            }
+        </style>
+    </head>
+    <body>
+        <p>
+            第一部分：回故乡
+            　　我冒了严寒，回到相隔二千余里，别了二十余年的故乡去。
+            　　时候既然是深冬,渐近故乡时，天气又阴晦了，冷风吹进船舱中，呜呜的响，从蓬隙向外一望，苍黄的天底下，远近横着几个萧索的荒村，没有一些活气。我的心禁不住悲凉起来了。
+            　　阿！这不是我二十年来时时记得的故乡？
+            　　我所记得的故乡全不如此。我的故乡好得多了。但要我记起他的美丽，说出他的佳处来，却又没有影像，没有言辞了。仿佛也就如此。于是我自己解释说：故乡本也如此，——虽然没有进步，也未必有如我所感的悲凉，这只是我自己心情的改变罢了，因为我这次回乡，本没有什么好心绪。
+            　　我这次是专为了别他而来的。我们多年聚族而居的老屋，已经公同卖给别姓了，交屋的期限，只在本年，所以必须赶在正月初一以前，永别了熟识的老屋，而且远离了熟识的故乡，搬家到我在谋食的异地去。
+        </p>
+        <p>
+            The first part: back home I took a cold, back separated by two
+            thousand years, no more than twenty years of home to go to. The time
+            since it is deep winter,asymptotic hometown, the weather was gloomy
+            country, the cold wind blowing into the cabin, the whining sound
+            from Punta slot outward looking, the greenish yellow of the world,
+            near and far sideways a few desolate in the deserted village, not
+            some atmosphere on. My heart couldn't help but dreary up. Ah! This
+            is not my twenty years from time to time to remember the homeland of
+            it? I remember the home of all as good as this. My hometown is much
+            better now. But I remember his beautiful, to say he's good at, yet
+            there's no image, no words anymore. As if also on the case. So I
+            myself explained: hometown this is also the case, although no
+            progress, it may not like me the sense of desolation, this is just
+            my own mood of changing it, because I'm back to the township, the
+            present there is nothing good ready. This is designed in order to
+            don't he come. Our Poly Family and the people of the old house, it
+            is well with selling to the level of the surname, and the
+            cross-House of the period, only in the present year, so you must
+            rush in to the first day before farewell to a familiar old house and
+            away from the familiar home, moving to me on 谋食 places to go.
+        </p>
+        <div class="outer">
+            <div class="inner"></div>
+        </div>
+        <p class="over">我冒了严寒，回到相隔二千余里，别了二十余年的故乡去。</p>
+
+        <p class="vertical">我冒了严寒，<span class="vertical-child">回到相隔二千余里</span>，别了二十余年的故乡去。</p>
+        <script>
+            // 文本样式
+            // text-align：文本水平对齐方式。
+            // 1. left：左对齐，默认值。
+            // 2. center：居中对齐。
+            // 3. right：右对齐。
+            // 4. justify：两端对齐。
+
+            // 网页中，图片、行内块都可以使用文本对齐的方式调整位置。（如box1）
+
+            // text-indent：首行缩进（可以是负值）
+
+            // text-text-decoration：文本修饰
+            // 1. none：默认值，没有修饰
+            // 2. underline：下划线
+            // 3. overline：上划线
+
+            // white-space：空白空间处理
+            // text-overflow：文本溢出处理
+
+            // line-height：行高（文字默认是在行高中垂直居中的）
+            // 但由于文字是基于基线对齐的，实际上并不完全垂直居中
+            // 当行高后不跟单位时，单位默认是（em）
+
+            // 文字的垂直对齐
+            // 在网页中,每个文字被显示时都会有一个文本框(可以想象为元素的边框)与之对应.
+            // 当给元素设置 font-size 时,实际上是设置文本框的大小.
+            // 在文本框存在一个特殊的位置叫 baseline(基线)
+
+            // 默认每个文字和父元素在垂直方向都是沿着基线对齐的。
+            // vertical-align：设置元素垂直对齐的方式
+            // 1. baseline：沿着基线对齐，默认值。
+            // 2. top：子元素文本框的顶部和父元素文本框的顶部对齐。
+            // 3. bottom：子元素文本框的顶部和父元素文本框的底部对齐。
+            // 4. middle：将元素的中线和 父元素基线高度 + x高度一半的位置对齐。
+            // 开发中经出通过vertical-align来消除图片下边的空白。
+
+            // 图标文字：指将小图标制作成文字，字体图标文件 .ttf, wttf等
+            // 常见的第三方图标文字库：
+            // 1.https://fontawesome.com/
+            // 2.https://remixicon.com/
+            
+        </script>
+    </body>
+</html>

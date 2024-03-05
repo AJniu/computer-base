@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .outer {
+                width: 800px;
+                height: 600px;
+                background-color: tomato;
+                position: relative;
+            }
+            .inner {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+                background-color: #bfa;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="outer">
+            <div class="inner"></div>
+        </div>
+        <script>
+            // 盒模型等式（块元素 margin: 0 auto; 水平居中的原理）
+            // margin-left + 可见框宽度 + margin-right = 包含块的内容区宽度
+
+            // 当元素开启了绝对定位后，两个新等式诞生了！
+            // left + margin-left + 可见框宽度 + margin-right + right = 包含块的内容区宽度 （水平方向）
+            // top + margin-top + 可见框高度 + margin-bottom + bottom = 包含块的内容区高度 （垂直方向）
+
+            // top, right, bottom, left 默认值为 auto
+            // top, right, bottom, left 为auto时，会让元素处在原本的位置不变。
+            // 因此如果只写 margin: 0 auto;不再能使元素水平居中。
+            // 根据上诉的两个等式,可得以下结果：（前提是开启了绝对定位）
+            // left: 0; right: 0; margin: 0 auto; 会使元素水平居中
+            // top: 0; bottom: 0; margin: auto 0; 会使元素垂直居中
+            // top: 0; right: 0; bottom: 0; left: 0; margin: auto; 会使元素垂直水平居中
+        </script>
+    </body>
+</html>

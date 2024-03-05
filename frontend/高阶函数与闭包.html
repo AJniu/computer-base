@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // OCP 原则：应该对扩展开发而对修改关闭
+            // 例如一个 filter 函数
+            const filter = (arr, cb) => {
+                const newArr = [];
+                for (const item of arr) {
+                    if (cb(item)) {
+                        newArr.push(item);
+                    }
+                }
+            };
+            // 可以自定义判断条件
+            // 此处是为了示例，通常回调函数都是匿名箭头函数
+            const condition = (item) => {
+                return item.age > 18;
+            };
+            // 高阶函数 - 如果一个函数的参数或返回值是函数，则这个函数就称为高阶函数。
+
+            // 一个函数的参数也可以是函数，如果将函数作为参数传递，那么我们称这个函数为回调函数（callback）
+
+            // 闭包：就是能访问外部函数作用域中变量的函数
+
+            // 构成闭包的条件：
+            // 1. 函数返回值是一个函数（函数的嵌套）
+            // 2.返回的函数要引用外部函数中的变量
+            function outer() {
+                let a = 1; // 函数作用域定义的变量 a
+                return () => {
+                    a++; // 由于作用域的缘故，此时的变量 a 访问的变量为上述 函数作用域的变量 a
+                    console.log(a);
+                };
+            }
+
+            const inner = outer();
+            inner();
+            inner();
+            inner();
+            const inner1 = outer();
+            inner1();
+            inner1();
+
+            // 闭包的原理
+            let x = '全局变量x';
+
+            const fn = () => {
+                console.log(`fn打印 -> ${x}`);
+            };
+            fn();
+
+            const fn1 = () => {
+                let x = 'fn1中的x';
+                // console.log(`fn1打印 -> ${x}`)
+                fn();
+            };
+            fn1();
+
+            const fn2 = () => {
+                let x = 'fn2中的x';
+                // console.log(`fn2打印 -> ${x}`)
+                fn1();
+            };
+            fn2();
+
+            // 由上可知，函数的作用域 在创建时 就已经确定，和掉用的位置无关。（词法作用域）
+            // 闭包利用的就是词法作用域
+
+            // 个人看，理解为调用函数时会去函数创建的地方执行，而不是将函数的内容复制到调用位置执行更容易理解。
+            // 虽然由于变量提升的原理，这个个人看法有歧义
+
+            const fn3 = () => {
+                let x = 'fn3中的x'; // 将此处的变量 x 注掉，它则会向全局作用域中找
+
+                // fn4 在此创建，它的作用域 已经确定，此时 与它最近的 外层作用域就是 fn3 的函数作用域
+                const fn4 = () => {
+                    console.log(`fn4打印 -> ${x}`);
+                };
+                // fn4()   // 在函数fn3中直接调用，与下方的直接调用 fn3 配合使用
+                return fn4;
+            };
+            // fn3() // 将上方fn4注释放开，同时注释掉 return fn4，则控制台输出 fn4打印 -> 全局变量x
+            const res = fn3();
+            res(); // 同样打印   fn4打印 -> 全局变量x
+
+            // 闭包的生命周期：
+            // 1. 闭包在外部函数调用时产生(如上 const res = fn3()时产生), 而且每次调用都会产生一个全新的闭包。
+            // 2. 在所有对内部函数的引用丢失时销毁（即所有res 变量不再指向闭包时）
+
+            // 注意:每个 res 闭包都有自己的内存空间存储变量值，所以像上面的inner多次调用时值才会不断增加
+        </script>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // Date 对象：在Js中，所有和时间相关的数据，都由Date表示
+            const d = new Date();
+            // 获取时间对象的时间戳(毫秒)
+            d.getTime();
+            console.log(d.getTime());
+            // Date 的静态方法 now，也能获取当前时间戳
+            console.log(Date.now());
+
+            // 日期对象的格式化
+            // 1.toLocaleDateString(area, options):对日期进行格式化
+            // 2.toLocaleTimeString(area, options):对时间进行格式化
+            // 3.toLocaleString(area, options):对时间进行格式化
+            // area:时区国家
+            // options：格式化选项
+            // 参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleString
+
+            // dayjs库是现在最好用的格式化国家，且目前element-plus已内部集成了
+        </script>
+    </body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- <script>
+            // 监听对象操作 - Proxy
+            // es6新增了的 类，用来创建一个代理
+            // 如果希望监听一个对象的相关操作，那么可以 先创建一个代理对象（Proxy 对象）
+            // 之后对该对象所有的操作,都可以通过Proxy对象完成,Proxy对象 可以监听我们想要对原对象进行哪些操作，
+            // Proxy对象有十三种捕获器（基本上可以监控对对象的所有操作）
+
+            // 语法：new Proxy(targetObj, handler(捕获器对象 - 对默认的捕获器进行重写))
+            const obj = {
+                name: 'pb',
+                age: 18,
+            };
+            const objProxy = new Proxy(obj, {
+                // 获取值的捕获器(获取值的回调函数)
+                // 回调时的回传参数target（被代理的对象）、key（要获取的属性）、proxyObj(即代理对象本身)
+                get(target, key, proxyObj) {
+                    console.log(`get cb executor`);
+                    // return target[key];
+
+                    // Reflect.get(target, key, proxyObj)方法获取属性值
+                    // 参数：target（获取属性的目标对象），key（要获取的属性），proxyObj（代理对象）
+                    return Reflect.get(target, key, proxyObj);
+                },
+
+                // 设置值的捕获器（设置值的回调函数 - 新增属性也可监听）
+                // 回调时的回调参数target（被代理的对象）、key（要设置的属性）、newVal（要设置的新值）、proxyObj(即代理对象本身recevier)
+                set(target, key, newVal, proxyObj) {
+                    console.log(`set ${key} value`);
+                    // target[key] = newVal;
+
+                    // Reflect.set(target, key, newVal, proxyObj)设置属性
+                    // 参数target（设置属性的目标对象）、key（要设置的属性）、newVal（要设置的新值）、proxyObj(代理对象)
+                    // 特点：会有boolean类型的返回值，判断是否设置成功
+                    Reflect.set(target, key, newVal, proxyObj);
+                },
+                // 删除属性的捕获器
+                // 回调时的回调参数target（被代理的对象）、key（要删除的属性）
+                deleteProperty(target, key) {
+                    console.log(`delete property ${key}`);
+                    delete target[key];
+                },
+
+                // 其他捕获器参考
+                // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+            });
+            console.log(objProxy.name);
+            // 由此可见 set 捕获器可以监控新增属性
+            objProxy.hobby = 'computer';
+            console.log(obj);
+
+            // Reflect - es6新增的一个API，它是一个对象，字面意思是 反射
+            // 它提供了很多 操作js对象的方法（有点像Object中操作对象的方法），这些方法都是静态方法
+
+            // 新增Reflect对象的原因：基本上可以说是为了那些对象方法放在Object构造函数上的缺陷。
+
+            // 常用方法（与Proxy的捕获器对应，共13个） - 在上述操作
+
+            // 为什么上述方法最后的参数都要有 recevier（proxyObj）?
+            // recevier在Reflect方法中，都是作为target对象中this的
+            const privateObj = {
+                // 一般认为以下划线开头的属性为私有属性
+                _name: 'priObj',
+                // 相当于Object.defineProperty 的 访问器描述符中的get(class定义时也有)
+                get name() {
+                    console.log(`privateObj get name function`);
+                    // 可通过控制台查看，当访问this._name时并没有触发 privateObjProxy 对象的 get 捕获器
+                    // 所以此时的 this 指向的依然是 privateObj, 所以此时访问 _name属性时就跳过了代理对象privateObjProxy
+                    return this._name;
+                },
+                // 相当于Object.defineProperty 的 访问器描述符中的set
+                set name(newVal) {
+                    this._name = newVal;
+                },
+            };
+
+            const privateObjProxy = new Proxy(privateObj, {
+                get(target, key, receiver) {
+                    console.log(`privateObjProxy get function`);
+
+                    // 有原对象this指向原对象的问题
+                    // return Reflect.get(target, key);
+
+                    // 当传递第三个参数recevier时，就会将recevier作为 target对象 的this()
+                    return Reflect.get(target, key, receiver);
+                },
+                set(target, key, newVal, receiver) {
+                    Reflect.set(target, key, newVal, receiver);
+                },
+            });
+            console.log(privateObjProxy.name); // 通过控制台查看访问顺序
+
+            // 一般用作构造函数或类
+            // 执行 executorFnOrClass 中的函数，但是创建出来的数据类型是 typeFnOrClass
+            // executorFnOrClass：要执行的构造函数或类
+            // paramsList[]：参数列表数组
+            // typeFnOrClass：要生成什么类型的对象
+            // Reflect.construct(executorFnOrClass, paramsList[], typeFnOrClass)
+        </script> -->
+
+        <script>
+            // 目标 - 响应式的简单实现：当一个变量发生改变时，所有依赖这个变量的函数都重新执行一遍（即所有依赖项都更新此值）。
+            // 使用订阅者 - 发布者 模式实现响应式(subscribers - notify)
+
+            // 为实现上述目标，可拆分为以下几步完成：
+            // 1.定义一个类，精准收集某个属性所有的依赖
+            // （即响应式对象中每个属性都对应一个Dep对象，实现了对属性依赖的精准更新）
+            class Dep {
+                constructor() {
+                    this.subscribers = new Set();
+                }
+                // 添加该属性的依赖函数（添加订阅者）
+                addSubscriber() {
+                    // 因为响应函数每次都会获取数据，所以都会走这里
+                    // 因为响应函数在数据更改执行是activeEffectFn为null
+                    // 所以防止这种事情发生
+                    if (activeEffectFn) {
+                        this.subscribers.add(activeEffectFn);
+                    }
+                }
+                // 发布者发布更改（通知该属性的所有依赖，重新执行获取该属性的新值）
+                notify() {
+                    // 遍历订阅者，重新执行依赖函数
+                    this.subscribers.forEach((effectFn) => {
+                        effectFn();
+                    });
+                }
+            }
+
+            // 2.为了精准存储和获取依赖，V3设计了以下数据结构
+            // 由两层Map组成：
+            // 外层WeakMap - key为所有响应式对象，value为一个包含所有属性的内层Map结构
+            const reactiveObj = new WeakMap();
+
+            // 内层Map结构 - key为响应式对象对应的所有属性，value为包含该属性依赖的 Dep 对象
+
+            // 封装一个获取具体某属性effectFns的函数
+            // 在获取时设置
+            const getDeps = (targetObj, key) => {
+                // 根据响应式对象，获取内层Map结构
+                let objMap = reactiveObj.get(targetObj);
+                if (!objMap) {
+                    objMap = new Map();
+                    reactiveObj.set(targetObj, objMap);
+                }
+
+                // 根据对象属性key，获取属性的Dep对象
+                let keyDep = objMap.get(key);
+                if (!keyDep) {
+                    keyDep = new Dep();
+                    objMap.set(key, keyDep);
+                }
+                return keyDep;
+            };
+
+            // 3.实现一个reactive函数，实现对响应式对象的监控
+            const reactive = (obj) => {
+                return new Proxy(obj, {
+                    get(target, key, receiver) {
+                        const keyDep = getDeps(target, key);
+                        keyDep.addSubscriber();
+                        return Reflect.get(target, key, receiver);
+                    },
+                    set(target, key, newVal, receiver) {
+                        Reflect.set(target, key, newVal, receiver);
+                        const keyDep = getDeps(target, key);
+                        keyDep.notify();
+                    },
+                });
+            };
+            // 4.定义一个捕获响应式函数的工具函数，用来收集哪个函数是需要响应式的(即哪个函数需要响应式，就在watchEffect收集 - watchEffect(fn))
+            // 为了在get处定义一个全局变量记录响应式函数
+            let activeEffectFn = null;
+            const watchEffect = (effectFn) => {
+                activeEffectFn = effectFn;
+                effectFn();
+                activeEffectFn = null;
+            };
+            // 代码中的函数放到 watchEffect 中执行
+
+            const obj = reactive({ name: 'pb', age: 18 });
+
+            watchEffect(() => {
+                console.log(`obj.age的订阅者A`, obj.age);
+            });
+
+            watchEffect(() => {
+                console.log(`obj.name的订阅者B`, obj.name);
+            });
+            obj.age = 19;
+            obj.age = 20;
+            obj.name = '**';
+        </script>
+    </body>
+</html>

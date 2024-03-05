@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 模块：简单来说就是一个代码片段。
+
+            // 在nodejs中,默认支持的模块化规范是CommonJS.
+            // 在CommonJS中,一个 js 文件就是一个模块.
+
+            // CommonJS规范:
+            //  引入模块：使用require('模块路径')函数来引入模块。（引入的时候就将模块的代码执行了一遍）
+
+            // 暴露数据：在定义模块时，模块中的内容默认是不能被外部看到的.可以通过exports来设置要向外暴露的内容
+            // exports: (本身是一个对象，其他模块通过require()引入此模块时，返回值就是此对象)
+            // exports两种访问方式: （exports和module.exports是指向的是一个对象）
+            //  1. exports：可以将希望暴露给外部模块的数据，设置为exports的属性
+            //  2. module.exports：也可以通过 module.exports = {} 同时暴露多个数据
+
+            // CommonJS 本质上是使用了闭包的思想，nodejs运行时是将所有代码封装到了一个函数中，如下：
+            // （function(require, module, exports, __filename, __dirname) {
+            //     // 模块文件的代码
+            //     // 要验证也很简单，可以在模块文件中直接打印arguments，即可获得上面5个实参。
+            // }）
+
+            // ES6 原生模块化 - export 与 import
+            // 向外部导出 - export:
+            //  1. 导出变量: export let a = 10
+
+            // 设置默认导出：export default 导出项 （一个模块中，只能有一个默认导出。默认导出的只能是一个值）
+
+            // 引入模块 - import
+            // 1. import '模块路径'
+            // 2. import {a as alias, b, c} from 'path' // 通过as来指定别名
+            // 3. import * as alias from 'path' // 引入所有（尽量不要引入全部）
+            // 4. import alias from 'path' // 引入默认导出
+            // 5. import alias, {a, b, c} from 'path' // 同时导入默认导出和其他导出项
+
+            // 通过import 导入的内容都是常量
+
+            // ES模块化，在浏览器中同样支持。这也是esbuild等新打包工具高效的原因之一。
+        </script>
+    </body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>综合理解，this指向的是什么，就看 . 之前是什么</h1>
+
+        <h3>面向对象语言中this表示当前对象的一个引用。</h3>
+        <h3>但在js中，this不是固定不变的，它会随执行环境的改变而改变。</h3>
+        <ul>
+            <li>在方法中，this表示该方法所属的对象</li>
+            <li>
+                如果单独使用(即在全局作用域下直接使用)，this表示全局对象.(严格模式下指向undefined)
+            </li>
+            <li>在函数中，this表示全局对象</li>
+            <li>在函数中，在严格模式下，this是未定义的(undefined)</li>
+            <li>在事件中，this表示接收事件的元素</li>
+            <li>类似call()、bind()、apply()方法可以将this引用到任何对象</li>
+        </ul>
+        <!-- <script>
+            // 方法中的this:
+            // let obj = {
+            //     firstName: 'John',
+            //     lastName: 'Doe',
+            //     id: 5566,
+            //     fullName: function () {
+            //         return this.firstName + ' ' + this.lastName; // John Doe
+            //         // 方法中的this指向该方法所属的对象obj
+            //     },
+            // };
+
+            // 单独使用this:
+            // 单独使用this,则它指向全局(global)对象
+            // 在浏览器中，window就是该全局对象为[object Window]
+
+            // 函数中使用this(默认)
+            // 在函数中，函数的所属者默认绑定到this上.
+
+            // ----------------------------------------------------------------
+
+            // 李立超this讲解
+            // this: 函数在执行时，JS解释器每次都会传递一个隐含的参数，这个参数就叫做 this。
+            // this 会指向一个对象。 this 指向的对象会根据函数调用方式的不同而不同。
+
+            // 1. 以函数形式调用时，this 指向的是 window
+            function fn() {
+                console.log('fn this ->', this);
+            }
+            fn(); // Window
+            // （即使在方法内部定义的函数，直接调用时，this 的指向也是window）
+            const objBox = {
+                objFn() {
+                    function t() {
+                        console.log(
+                            '在方法内部定义的函数，直接调用时this也指向 window',
+                            this
+                        );
+                    }
+                    t();
+                },
+            };
+            objBox.objFn();
+
+            // 2. 已方法的形式调用时，this指向的是调用方法的对象。
+            const obj = { src: 'obj' };
+            obj.test = fn;
+
+            obj.test();
+
+            // 3.箭头函数中的this.
+            // 箭头函数没有自己的this， 它的this由它创建时的外层作用域决定（外边是谁就指向谁）
+            // 箭头函数的 this 和它的调用方式无关。
+            const arrowFn = () => {
+                console.log('arrowFn this ->', this);
+            };
+
+            arrowFn(); // window
+
+            const obj2 = {
+                fn,
+                arrowFn,
+                src: 'obj2',
+                getInnerArrow() {
+                    const innerArrow = () => {
+                        console.log(
+                            'obj2 getInnerArrow方法产生的箭头函数，this指向的是 ->',
+                            this
+                        );
+                    };
+                    return innerArrow;
+                },
+            };
+            obj2.fn(); // obj2
+            obj2.arrowFn(); // window
+
+            const innerArrow = obj2.getInnerArrow();
+            innerArrow();
+
+            // call, apply, bind
+            // 函数除了通过  functionName() 这种形式调用外，还可以通过其他的方式调用函数
+            //  比如可以通过函数的 call(),apply(),bind()方法来调用函数，如 fn.call()
+
+            // call 和 apply 除了可以调用函数，还可以用来指定函数中的this
+            // 通过call方法调用函数，函数的实参，直接在第一个参数后一个一个列出来
+            // 通过apply方法调用函数，函数的实参以一个数组包裹所有参数的形式传递
+
+            // const TFn = () => {
+            // console.log(`TFn 的this ->`, this);  // 这里使用箭头函数创建TFn， call、apply和bind方法对其无效（因为箭头函数本身就没有自己的this，它的this由外层作用域决定）
+            // };
+            function TFn() {
+                console.log(`TFn 的this ->`, this);
+            }
+
+            TFn.call(obj2);
+            TFn.apply(obj2); // 都会直接执行
+
+            // bind: bind() 是函数的方法，可以用来创建一个新的函数
+            // 且bind()可以为新函数绑定this（绑定this,后续即使使用call和apply指定this也不会更改）
+            // bind()也可以为新函数绑定参数（绑定的参数也无法修改，调用新函数传的实参会默认传递给未绑定的形参）
+
+            const newTFn = TFn.bind(obj2); // 不会直接执行，而是会返回一个新函数
+            newTFn();
+        </script> -->
+
+        <!-- <script>
+            // js高级：
+            // 非箭头函数的this:
+            // 一：js 中this的绑定有几种规则：
+            // 1.默认绑定：函数直接调用时，默认绑定全局对象为this（严格模式下指向undefined）
+            // 2.隐式绑定：当一个函数作为一个对象的方法调用时，js引擎会隐式的将函数中的this绑定为该对象
+            // 3.显式绑定：使用call、apply、bind 显式绑定 this
+            //  call和apply异同点：（立即执行函数）
+            //  同：call 和 apply 第一个参数都是显式指定的 this
+            //  异：call 向函数传递参数时是以参数列表（a,b）形式传递，apply 向函数传递参数时是以数组的形式传递。
+
+            // bind:生成一个绑定指定this的新函数。(不会立即执行函数)
+
+            // 4.new绑定：简单来说就是new出来的 实例对象 会成为 该实例对象方法 中的 this。（参考new的作用第三步。）
+
+            // 二：绑定规则优先级：
+            // new绑定(仅仅指生成对象那一下) > 显示绑定（bind > apply 和 call ）  > 隐式绑定 > 默认绑定
+
+            // 三：一些内置(高阶)函数的this分析：（this指向其实还是跟传入的高阶函数在内部是怎么调用有关）
+            // 1. setTimeout：setTimeout内部实现是 直接调用传入的回调函数，所以属于默认绑定，this执向 window（严格模式也是）。
+            // 2. 通过 el.onclick 和 el.addEventListener 添加的事件监听函数，this指向的是 元素本身。（.onclick是el.fn(), el.addEventListener是fn.call(el）
+            // 3. 数组forEach,map,filter,find等高阶函数，默认情况下是window,但它们都接收第二个参数作为this，如果指定了，则this指向第二个参数
+
+            // 四：this规则之外：
+            //  1.忽略显示绑定: 当bind、apply、call不传任何数据，或传入null和undefined，则忽略显示绑定，自动将this绑定成全局对象
+            //  2.间接函数引用：
+            let objx = {
+                name: 'obj',
+                foo: function () {
+                    console.log(this);
+                },
+            };
+
+            let obj1 = {
+                name: 'obj1',
+            };
+            (obj1.bar = objx.foo)(); // 会被认为是单独调用函数（跟词法解析有关，可忽略此情况）
+
+            // 箭头函数中的this：箭头函数不绑定this，它只会使用上层作用域（对象的{}不会产生作用域）中的this
+        </script> -->
+
+        <!-- <script>
+            // call-apply-bind 的实现（js模拟实现逻辑，源码c++实现并不是这样）
+
+            // 1.myCall 的实现：
+            Function.prototype.myCall = function (thisArg, ...args) {
+                // args是一个数组
+
+                // 边界情况（edge case ）处理：
+                // 如果thisArg 为null 或 undefined，将其指定为 window
+                // 使用Object转换,即使是基本数据类型也转换为对应的包装对象
+                thisArg = (thisArg !== undefined && thisArg !== null) ? Object(thisArg) : window;
+
+                // 当一个函数使用 myCall 方法时，相当于将 此函数 隐式绑定为了 this,
+                // 然后将 此函数 隐式绑定到 myCall 方法指定的this对象上。
+                thisArg.fn = this;
+
+                // 调用thisArg对象的fn方法，由于隐式绑定，thisArg.fn 方法的this已经指向了thisArg对象
+                const result = thisArg.fn(...args);
+
+                // 删掉过程中产生的多余属性
+                delete thisArg.fn;
+
+                // 返回函数调用结果
+                return result;
+            };
+            function foo(m, n) {
+                console.log('foo is running', this);
+            }
+            const obj3 = {
+                name: 'this',
+            };
+            foo.myCall(obj3, 1, 2);
+        </script> -->
+
+        <!-- <script>
+            // apply 的实现
+            Function.prototype.myApply = function (thisArg, argArray) {
+                // 一.edge case: 判断argArray
+                // 1. argArray 未传 --- 为后续执行，设置为空数组
+                // 2. argArray 为非数组 --- 报错
+                if (argArray === undefined) {
+                    argArray = [];
+                } else if (Array.isArray(argArray) === false) {
+                    throw new Error('need Array');
+                    return;
+                }
+                // 二：处理绑定的thisArg
+                thisArg =
+                    thisArg !== undefined && thisArg !== null
+                        ? Object(thisArg)
+                        : window;
+
+                thisArg.fn = this;
+
+                // 三：执行函数
+                const res = thisArg.fn(...argArray);
+                delete thisArg.fn;
+                // 四：return 返回值
+                return res;
+            };
+
+            function foo(a, b) {
+                console.log('foo ->', this, a, b);
+            }
+        </script> -->
+
+        <script>
+            // bind 的实现
+            Function.prototype.myBind = function (thisArg, ...bindArgs) {
+                // 1.edge case
+                thisArg =
+                    thisArg !== undefined && thisArg !== null
+                        ? Object(thisArg)
+                        : window;
+
+                const fn = this;
+                // 返回新生成的函数
+                return function (...args) {
+                    thisArg.fn = fn;
+                    const res = thisArg.fn(...bindArgs, ...args);
+                    delete thisArg.fn;
+                    return res;
+                };
+            };
+
+            // 使用箭头函数作为返回值，可以直接在箭头函数内使用this
+            Function.prototype.myArrowBind = function (thisArg, ...bindArgs) {
+                // 1.edge case
+                thisArg =
+                    thisArg !== undefined && thisArg !== null
+                        ? Object(thisArg)
+                        : window;
+
+                // 返回新生成的函数
+                return (...args) => {
+                    thisArg.fn = this;
+                    const res = thisArg.fn(...bindArgs, ...args);
+                    delete thisArg.fn;
+                    return res;
+                };
+            };
+        </script>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 递归 - 函数内部调用自身就是递归函数
+            // 递归就是将一个大问题分解成无数小问题解决
+
+            // 编写递归要有两个条件:
+            // 1. 终止条件
+            // 2. 递归条件
+
+            // 经典阶乘函数
+            const factorial = (num) => {
+                // 终止条件
+                if (num === 1) {
+                    return 1;
+                }
+                // 递归条件 num! = num * factorial(num - 1)
+                return num * factorial(num - 1);
+            };
+        </script>
+    </body>
+</html>

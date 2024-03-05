@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .box {
+                width: 200px;
+                height: 200px;
+                background-color: #bfa;
+                outline: 10px solid tomato;
+            }
+            .box1 {
+                width: 200px;
+                height: 200px;
+                background-color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box"></div>
+        <div class="box1"></div>
+        <script>
+            // 轮廓-圆角-阴影
+            // outline：轮廓线，和border很像，但outline不会影响到元素可见框大小（不会影响布局）
+            // border-radius：圆角，可以为四个角单独设置角度
+            // box-shadow：可以为元素指定阴影
+            // 取值：box-shadow: x轴偏移量  y轴偏移量  模糊半径（阴影的模糊程度） 扩散半径（阴影向外扩散长度） 阴影颜色
+            // 可以设置一个inset表示内阴影
+            // 参考：https://developer.mozilla.org/zh-CN/docs/Web/CSS/box-shadow
+        </script>
+    </body>
+</html>

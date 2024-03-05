@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* div {
+            width: 200px;
+            height: 200px;
+            float: left; */
+            /* 查看效果 */
+            /* float: right; */
+        /* } */
+        /* .box1 {
+            background-color: tomato;
+        }
+        .box2 {
+            background-color: blueviolet;
+        }
+        .box3 {
+            width: 80%;
+            background-color: yellowgreen;
+        }
+        .text {
+            background-color: orange;
+        } */
+        /* 一个float页面布局的样式 */
+        .contain {
+            width: 1200px;
+            height: 800px;
+            margin: 0 auto;
+            background-color: rgb(21, 20, 20);
+        }
+        .header {
+            height: 100px;
+            background: tomato;
+        }
+        .mid {
+            height: 568px;
+            margin: 16px 0;
+        }
+        .mid > div {
+            height: 100%;
+            float: left;
+        }
+        .menu {
+            width: 200px;
+            background-color: #8ad53a;
+        }
+        .banner {
+            width: 900px;
+            background-color: #ed5496;
+        }
+        .right {
+            width: 100px;
+            background-color: #2caf817e;
+        }
+        .footer {
+            height: 100px;
+            background: red;
+        }
+
+        /* 高度塌陷问题 */
+        .outer {
+            border: 3px solid red;
+        }
+        .inner {
+            float: left;
+            width: 200px;
+            height: 200px;
+            background-color: tomato;
+        }
+        .outer-next {
+            width: 300px;
+            height: 300px;
+            background-color: #2093c5;
+        }
+    </style>
+</head>
+<body>
+    <!-- <div class="box1">box1</div>
+    <div class="box2">box2</div>
+    <div class="box3">box3</div>
+    <p class="text">hahaha</p>
+    <hr> -->
+    <!-- 一个float页面布局 -->
+    <!-- <div class="contain">
+        <div class="header"></div>
+        <div class="mid">
+            <div class="menu"></div>
+            <div class="banner"></div>
+            <div class="right"></div>
+        </div>
+        <div class="footer"></div>
+    </div> -->
+
+    <!-- 高度塌陷问题 -->
+    <div class="outer">
+        <div class="inner"></div>
+    </div>
+    <div class="outer-next"></div>
+    <script>
+        // flex - 浮动(也比较麻烦,现在用的少)
+        // 传统的盒模型都是垂直排列
+        // 使用 flex 可以使元素脱离文档流而横向排列
+
+        // float: 可选择
+        //  1. none：默认值，无浮动
+        //  2. left：向左浮动
+        //  3. right：向右浮动
+         
+        // 浮动的特点：
+        //  1. 设置浮动后，元素会脱离文档流，不再占据原有位置，其后的元素会补位
+        //  2. 设置浮动后, 元素会向其包含块的左侧或右侧移动 (水平移动)
+        //  3. 如果一行之内无法容纳所有浮动元素,则后边的元素会自动移动的下一行
+        //  4. 浮动元素不会超过它上边浮动的兄弟元素，最多平齐。
+        //  5. 浮动元素不会盖住文字，文字会环绕在浮动文字的周围。
+
+        // 元素脱离文档流的特点：
+        // 块元素宽度不再铺满，不再单独占据一行.
+        // 块元素和行内元素基本没分别了。
+
+        // 浮动的问题
+        // 1. 高度塌陷问题：
+        //  在文档流中的元素，可以将其他元素的高度撑开。
+        //  当元素浮动时，元素会脱离文档流，它就无法撑开父元素，导致父元素高度塌陷。
+        //  父元素塌陷后，其后的元素会自动上移，导致布局混乱。
+
+        // BFC(Block Formatting Context 块级格式化上下文) - 解决高度塌陷问题方案
+        // 可以将 BFC 理解为隐藏的属性，当开启 BFC 后具有如下特性：
+        // 1. 子元素的垂直外边距不会传递给父元素（解决了外边距折叠问题）
+        // 2. 元素不会被浮动元素所覆盖
+        // 3. 元素可以包含浮动的子元素
+
+        // 开启BFC: (需要通过一些其他样式间接开启 BFC,但由于BFC是通过一些样式间接开启的,所以都会有一些副作用)
+        // 1. 浮动会开启元素的BFC
+        // 2. overflow设置为非默认值(visible) 的值
+        // 3. position: absolute或 fixed
+        // 4. display: flow-root;(副作用最小)
+        // 其他方案参考:https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context
+
+        // clear - 清除浮动元素对当前元素所产生的影响
+        // 可选值:
+        //  1. left: 清除左侧浮动的影响
+        //  2. right: 清除右侧浮动的影响
+        //  3. both: 清除最大一侧浮动的影响
+
+        // 编写clearfix 解决高度塌陷问题
+        // .clearfix::after {
+        //     content: '';
+        //     clear: both;
+        //     display: block;
+        // }
+    </script>
+</body>
+</html>

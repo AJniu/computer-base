@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            /* 通过边框画三角可以看出，边框是以三角形状向内延伸的 */
+            .box {
+                width: 0px;
+                border: 100px solid #fff;
+                border-top: none;
+                border-bottom-color: tomato;
+            }
+            .box ~ div {
+                width: 200px;
+                height: 200px;
+                box-sizing: border-box;
+            }
+            .top {
+                background: #bfa;
+                margin-bottom: 100px;
+            }
+            .top__inner {
+                width: 50px;
+                height: 50px;
+                background-color: blanchedalmond;
+                /* 此margin-top影响了父元素的margin-top，因为它俩的外边距起点是一致的。 */
+                margin-top: 50px;
+            }
+            .bottom {
+                background: tomato;
+                /* 无论margin-top是 150px 还是 -150px, 都会使用这个绝对值大的*/
+                margin-top: 150px;
+                /* margin-top: -150px; */
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box"></div>
+
+        <div class="top">
+            <!-- <span>避免top__inner的margin-top传递给父元素</span> -->
+            <div class="top__inner"></div>
+        </div>
+        <div class="bottom"></div>
+        <script>
+            // 盒模型：每一个盒模型都由以下几部分组成
+            // 1. content（内容区）：子元素实际存储区域（内容区的大小由width和height决定）
+            // 2. border（边框）
+            // 3. padding (内边距)：默认情况下，背景颜色会延伸到内边距上
+
+            // 默认情况下盒模型尺寸为：content + border + padding
+            // 如果要修改盒模型的计算方式,需使用 box-sizing 属性
+            // box-sizing: content-box（默认值）
+            //              border-box (设置该值后，width和 heigth 等于对应的 content + border + padding)
+
+            // 所以 box-sizing 属性也可以理解为 width 和 height 的生效效果。
+            // 默认width 和 height的值为 content 的范围
+            // 设置为 border-box 后为整个盒模型的大小
+
+            // margin：外边距
+            // 由于浏览器默认是按照 自左向右，自上向下 的顺序排列元素的。
+            // 所以当设置 margin-top 和 margin-left时，是改变自身位置。
+            // 当设置 margin-right 和 margin-bottom 时，改变其他元素的位置。
+
+            // 外边距折叠：垂直方向的相邻外边距会发生外边距折叠的现象（如上 div.top 和 div.bottom）
+            // 即 上一个元素的margin-bottom 与 下一个元素的 margin-top 并不会叠加，而是回去两个值中绝对值大的那个作为边距。
+
+            // 父子元素间,如果子元素的外边距起点与父元素相同,则子元素的外边距会传递给父元素。(如div.top__inner)
+            // 通过使其外边距起点不同可避免出现此状况（添加边框，添加间隔元素等）
+
+            // margin: auto;
+            // 可以将margin的值设置为auto，设置auto后，元素外边距由浏览器自动计算。
+            // 当将margin-left或margin-right中的一个设置为auto时，则浏览器会自动使其尽量的大。
+            // 当将margin-left和margin-right都设置为auto时，则左右边距会相同，实现了元素水平居中。
+
+            // 默认情况下，margin-top 和 margin-bottom为auto时，浏览器会自动取0.
+
+            // 行内元素的盒模型
+            // content: width 和 height 无效
+            // padding：padding-left与padding-right生效，但padding-top与padding-bottom 不会改变页面布局（即不会使其他元素移动位置）
+            // border：可以设置边框，但垂直方向上也不会改变页面布局。
+            // margin：与padding的实现效果相同。
+
+            // 文档流：网页中的位置，网页中所有的元素默认都存在与文档流中(未使用css改变时)
+            //  文档流中的元素，必须要遵循文档流的规则在页面中排列
+            //  块元素:
+            //      在文档流中自上向下垂直排列
+            //      块元素的默认宽度会将父元素撑满(默认为auto)
+            //      块元素的默认高度被内容撑开
+
+            //  行内元素:
+            //      行内元素在文档流自左向右水平排列
+            //      行内元素的宽度和高度都被内容撑开
+        </script>
+    </body>
+</html>

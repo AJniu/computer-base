@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .test {
+                width: 100px;
+                height: 100px;
+                border: 1px solid tomato;
+            }
+            .test::before {
+                /* content 属性一定要有，否则无内容 */
+                content: 'start';
+                color: red;
+            }
+            .test::after {
+                content: 'end';
+                color: red;
+            }
+            .test::selection {
+                background-color: aqua;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="test">I am a div element</div>
+        <script>
+            // 伪元素：表示的是页面中特殊的位置，以 :: 开头
+            // ::before --- 标签开始位置（<div>这里,开始标签之后）
+            // ::after --- 标签结束位置（这里</div>，结束标签之前）
+            // ::first-letter --- 首字母（文字）
+            // ::first-line --- 第一行
+            // ::selection --- 选中的文字的样式
+        </script>
+    </body>
+</html>

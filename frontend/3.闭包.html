@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 闭包（closure）：又称词法闭包（词法分析阶段闭包已经确定）或函数闭包。
+            // 闭包在实现上是一个结构体，它存储了一个函数和关联的环境（相当于一个符号查找表）
+            // 闭包跟函数最大的区别是：当捕捉闭包时，它的 自由变量 会在捕捉时被确定，这样即使脱离了捕捉时的上下文，它也能照常运行。
+            // 闭包是由两部分构成：返回的函数(bar) + 可以访问的自由变量（msg）
+            function foo() {
+                var msg = 'Pb';
+                var unUse = 'unUse';
+                function bar() {
+                    // debugger // 打开这个可查看unUse已不存在
+                    console.log('bar', msg);
+                }
+
+                return bar;
+            }
+            var fn = foo();
+            fn();
+            // 注：foo中的变量 unUse 由于未在闭包中使用，所以在Chrome浏览器中会被销毁（但ECMA规范里其实是不销毁的，为了提高性能浏览器实现的优化）
+
+            // 内存泄露：由于闭包的原因导致该被GC回收的内存空间无法回收，就叫内存泄露。（将闭包赋值为null（内存0x0）即可解决，以上为例即将 fn 赋值为 null）
+
+            // 内存泄露案例
+            // 原理：创建一个长度为 10 * 1024 * 1024，元素都为 1 的数组，每个数组占据空间约为 40MB,
+            //      使用一个定时器，每3秒形成一个闭包，查看计算机内存变化。
+            // 整数一般在js中是占 8 byte，但V8引擎会对齐进行优化，数字不大时会占 4 byte。
+            let count = 1;
+            let fnArrs = [];
+            function createArrFn() {
+                var arr = new Array(10 * 1024 * 1024).fill(1);
+                return () => {
+                    console.log(arr.length);
+                };
+            }
+
+            let timer = setInterval(() => {
+                if (count >= 10) {
+                    clearInterval(timer);
+                    console.log('内存不再增长');
+                    setTimeout(() => {
+                        fnArrs = null;
+                        console.log('清除闭包');
+                    }, 2000);
+                    return;
+                }
+                count++;
+                fnArrs.push(createArrFn());
+            }, 2000);
+            // 闭包图：
+            // https://boardmix.cn/app/share/CAE.CPHP2QwgASoQOPRDEXMagh9i9WLb1yQvsTAGQAE/vrMocS
+        </script>
+    </body>
+</html>

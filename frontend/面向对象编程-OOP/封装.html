@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 面向对象编程三大特性：
+            // 1. 封装
+            // - 对象就是一个用来存储不同属性的容器。
+            // - 对象不仅存储属性，还要负责属性的安全（属性值符合要求，通过私有属性等实现）
+            // - 直接添加到对象中的属性，并不安全，因为它们可以被随意的修改
+            // - 确保数据的安全
+            // 实现封装的方法
+            // 1.私有化数据（#）- 将需要保护的数据设置为私有，只能在类内部使用
+            // 2.提供getter和setter方法，来开放对私有数据的操作
+            //      优势：1.可以控制属性的读写权限
+            //           2.可以在方法中对属性的值进行验证（保证类型正确）
+            class ClosedObj {
+                // # 相当于修饰符 private的简写。 #name 和 private是相同的
+                #name = '';
+                #age = 0;
+                #address = 'China';
+
+                constructor(name, age, addr) {
+                    if (name !== undefined) {
+                        this.#name = name;
+                    }
+                    if (age !== undefined) {
+                        this.#age = age;
+                    }
+                    if (addr !== undefined) {
+                        this.#address = addr;
+                    }
+                }
+
+                // 私有属性 #name 的getter 和 setter
+                // 本质上还是定义了name方法，但js解释器会可以通过instance.propertyName读取和修改
+                get name() {
+                    return this.#name;
+                }
+                set name(val) {
+                    if (typeof val !== 'string') {
+                        let err = new Error('Only support string type');
+                        return err;
+                    }
+                    this.#name = val;
+                }
+            }
+            const obj = new ClosedObj();
+            console.log(obj);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            span {
+                display: inline-block;
+                width: 200px;
+                height: 200px;
+                background-color: tomato;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 注意这两个span之间有个空白线，是因为换行被浏览器解析为了一个空格 -->
+        <span>inline-block span1</span>
+        <span>inline-block span2</span>
+        <script>
+            // display：设置元素的类型
+            // 1. inline：将元素设置为行内元素
+            // 2. block：将元素设置为块元素
+            // 3. inline-block：将元素设置为行内块元素，
+            //  行内块元素兼具行内元素和块元素的特点：
+            //  既可以不独占一行，又可以设置宽高
+            // 注意:行内块的特点和文本很像,所以布局的时候尽量少用（如换行会被解析成一个空格，还有文字基线问题）
+
+            // 4. none：隐藏元素
+        </script>
+    </body>
+</html>

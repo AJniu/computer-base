@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 函数式编程
+            // 一. 函数内置参数arguments（箭头函数没有）：一个包含实参列表的 类数组对象 。（本质是对象而不是数组）
+            // 补充知识点：callee属性可以获取当前元素所在的函数。
+
+            // 二. js纯函数：函数式编程中的重要概念，js符合函数式编程的范式，所以也有纯函数的概念。需符合以下条件：
+            //  1.此函数 在相同的输入值时，需产生相同的输出。
+            //  2.函数执行过程中，不能产生副作用.(对其他元素产生影响)
+
+            // 三. js柯里化：只传递给函数一部分参数来调用它，让它返回一个函数去处理剩余参数。这个过程就叫柯里化。如下：
+            const fn = (m, n, x, y) => {
+                return m + n + x + y;
+            };
+            // 柯里化过程
+            const kFn = (m) => {
+                return (n) => {
+                    return (x) => {
+                        return (y) => {
+                            return m + n + x + y;
+                        };
+                    };
+                };
+            };
+            // 柯里化优势：
+            // 1.可以让函数处理的问题尽可能单一（设计模式里也有这种要求），而不是将一大堆逻辑放在一个函数中处理。
+            // 2.可以进行逻辑的复用（将一个函数多次封装为不同功能的函数）
+
+            // 柯里化函数的实现：
+            // 功能：将一个函数转换为可以用柯里化的方式调用的函数，返回的函数（curriedFn）具有以下两个功能：
+            // 1.当 参数数量大于等于 原函数 所需的参数时，调用原函数并返回结果。
+            // 2.当 参数数量不足时，返回一个柯里化过程函数，直到参数数量足够时，再执行原函数并返回结果。
+
+            // 总结：currying 是输入原函数fn，输出的是一个既有直接使用，又有原函数柯里化调用功能的函数curriedFn。
+            //      后续使用的是具有柯里化调用功能的函数curriedFn
+            const currying = (fn) => {
+                const curriedFn = (...args) => {
+                    // fn.length：返回所需参数的长度(当参数有默认值时，该默认值之后的参数会不在length统计之列)
+                    // fn.name：获取函数名
+                    // 参数数量大于等于原函数所需参数时
+                    if (args.length >= fn.length) {
+                        // 直接调用原函数
+                        return fn.apply(this, args);
+                    } else {
+                        // 没有达到参数数量时，返回一个新的函数，继续接收参数
+                        const childCurriedFn = (...childArgs) => {
+                            // 接收到参数后，递归调用curriedFn，检查是否达到了所需参数数量
+                            return curriedFn.apply(this, [
+                                ...args,
+                                ...childArgs,
+                            ]);
+                        };
+                        return childCurriedFn;
+                    }
+                };
+                return curriedFn;
+            };
+            const add = (x, y, z) => {
+                return x + y + z;
+            };
+
+            const curriedAdd = currying(add);
+            console.log(curriedAdd(10)(20)(30));
+
+            // 组合式函数 - 需将多个函数组合使用，且前一个函数的结构为后一个函数的参数，形如：fnB(fnA(1))
+            const myCompose = (...fns) => {
+                // 获取需要组合的函数数量
+                const fnsLength = fns.length;
+                if (fnsLength === 0) {
+                    throw new Error('请传入需组合的函数');
+                }
+                // 遍历参数，判断是否为函数
+                for (let i = 0; i < fnsLength; i++) {
+                    if (typeof fns[i] !== 'function') {
+                        throw new TypeError('Expected arguments are function');
+                    }
+                }
+                // 返回生成的组合后的函数
+                return (...args) => {
+                    let index = 0;
+                    let res = fns[index].apply(this, args);
+                    while (++index < fnsLength) {
+                        res = fns[index].call(this, res);
+                    }
+                    return res;
+                };
+            };
+        </script>
+    </body>
+</html>

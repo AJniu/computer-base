@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 一. Set: 类似于数组，但和数组的区别是 元素内容不能重复
+            // 1. 创建Set: new Set( iterable?)
+            const mathSet = new Set();
+
+            // 2.添加元素 - 只能添加一个
+            mathSet.add(10);
+            mathSet.add([20, 30, 40, 50]);
+
+            // 3.获取元素个数：size属性（相当于length）
+            console.log(mathSet.size);
+
+            // 4.删除元素 - 不是根据索引删除元素，而是根据元素删除
+            // mathSet.delete(10);
+
+            // 4.清空元素
+            // mathSet.clear();
+
+            // 5.判断元素是否存在 - return true | false
+            mathSet.has(10);
+
+            // 6.遍历 - forEach | for  of
+            mathSet.forEach((item) => {});
+
+            // Set 与 Array 互转
+            // arr = Array.from(set) || [...set]
+            // set = new Set(arr)
+
+            // 二. WeakSet: 与Set基本相同，但主要有以下两个差别：
+            //  1.WeakSet 只能存放对象类型，不能存放基本数据类型
+            //  2.WeakSet 对元素的引用是弱引用，如果没有其他引用对某个对象进行引用，那么GC可以对该对象进行回收。
+
+            // WeakSet 没有size属性， clear() 和 forEach() 方法，且它本身不支持遍历。
+            const wSet = new WeakSet();
+
+            // 强引用：由于GC回收机制（标记回收），此时obj指向了对象 { name: 'obj' } 不会被回收
+            // 弱引用：使用效果基本与强引用相同，也是有对对象的指向，只不过这个指向不会影响GC回收。
+            let obj = { name: 'obj' };
+
+            wSet.add(obj); // 添加obj到WeakSet，
+
+            // obj = null // 解除obj对 { name: 'obj' } 的指向，
+            // 此时尽管 wSet 还有元素指向 { name: 'obj' }，但不会影响 GC 回收 { name: 'obj' } 的内存。
+            // 但如果是 set 还有元素指向 { name: 'obj' }， 则 GC 不会回收 { name: 'obj' } 的内存。
+
+            // 三. Map : 与对象一样存储键值对（映射关系），但占用空间更小，性能稍强于对象。
+            // 对象的key 只能是string或Symbol 类型数据，但 Map 可以是任意类型数据
+            // 创建Map类型数据
+            // 1. 创建空map
+            // const map = new Map();
+
+            // 2. 使用二维数组创建map
+            const map = new Map([
+                // 数组的第一个变量会作为key，第二个变量会作为值
+                // 这种数据结构在js中被称为 entries
+                ['a', 1],
+                ['b', 2],
+                ['c', 3],
+                ['d', 4],
+                ['e', 5],
+            ]);
+
+            // map数据类型属性：
+            // map.size:获取map的长度
+
+            // map数据类型方法：
+            // map.set(key, value): 存储数据
+            // map.delete(key): 删除此属性 - 删除成功 true / 失败false
+            // map.get(key): 获取值
+            // map.has(key):判断map中是否有此属性，true / false
+            // map.clear():清空map
+            // map.keys(): 返回一个包含所有key的按序插入的引用的 迭代器对象（不是数组）。
+            // map.values(): 返回一个包含所有value的按序插入的引用的 迭代器对象（不是数组）。
+            // map.entries(): 返回一个包含所有键值对的按序插入的引用的 迭代器对象（不是数组）。 // console.log(map.entries())
+            // map.forEach(): 遍历map
+
+            // 遍历Map:
+            // 1. map.forEach((val, key, map) => {})
+            // 2. 使用for of遍历map：
+            // 此方式的原理与使用二维数组创建map类似，每个entry都是一个数组，数组第一个元素为key，第二个元素为value值
+            for (const entry of map) {
+                // 可在循环中直接使用 解构赋值 直接取得每个键值对的 key,和 value。 for (const [key, value] of map)
+                console.log(entry);
+            }
+
+            // 数组和 Map的相互转化
+            // Array -> Map
+            // 可以使用一个二维数组创建 Map，参考上面
+
+            // Map -> Array ：Map 转为 Array 也会转化为一个 二维数组 [[key, val], [key, val]]
+            // 1. 通过 Array 的静态方法 Array.from(val),
+            const arr = Array.from(map);
+
+            // 2. 通过展开运算符
+            const arr1 = [...map];
+
+            // 四. WeakMap：与Map基本相同，但有如下两个区别
+            // 1. WeakMap的 key 只能是对象,不接受其他类型
+            // 2. WeakMap的 key 对对象的引用是 弱引用,如果没有其他引用引用这个对象,那么GC可以回收该对象.
+
+            // WeakMap没有size属性， clear() 和 forEach() 方法，且它本身不支持遍历。
+        </script>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 可选链操作符 ?.
+            // 特点: 当对象属性不存在时,会短路,直接返回undefined. 如果存在，才会继续执行。
+            // 用法 ： (可能为undefined的属性)?.
+            let person = {
+                name: 'a',
+                friend: {
+                    name: 'xx',
+                },
+            };
+
+            console.log(person.name);
+            console.log(person.friend.name);
+            // 此处会报错，因为 .girlfirend 不存在，获取到的是undefined，从undefined读取属性报错
+            // console.log(person.girlfirend.name);
+            // 使用可选链操作符后，girlfriend 为undefined时，直接短路返回undefined，不再向后执行，所以不报错
+            console.log(person.girlfriend?.name);
+        </script>
+    </body>
+</html>
