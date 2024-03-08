@@ -41,6 +41,10 @@
                 会等到Promise的状态变成fulfilled状态，之后继续执行异步函数
             </li>
             <li>await 后表达式的返回结果，是Promise对象resolve返回的值</li>
+            <li>
+                await
+                后跟的表达式会被直接执行，但await之后的代码会被推入到微任务队列中,等到await后跟的Promise对象resolve之后才执行（参考await是如何用生成器实现的）
+            </li>
         </ul>
         <script>
             // 例一：async/await 底层实现过程（以js模拟）

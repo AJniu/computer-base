@@ -14,7 +14,7 @@
             // 如网络请求、定时器（这些都是浏览器处理的），我们只需要在特定的时候执行该有的回调函数即可。
 
             // 事件循环 - event loop
-            //  - 函数每次执行时，都会产生一个执行环境（个人觉得可以叫 runtime）
+            //  - 函数每次执行时，都会产生一个执行环境（个人觉得可以叫 runtime，实际上是FEC - 函数执行上下文）
             //  - 执行环境负责存储函数执行时所产生的 一切数据
 
             // 问题：函数的执行环境存储到哪里了？
@@ -61,8 +61,11 @@
             };
 
             // 宏任务与微任务
+            // 认识宏任务、微任务也需要知道一个前提：
+            // 像setTimeout、queueMicrotask等函数也是立即执行的。
+            // 以setTimeout为例，执行它时浏览器会立即调用其他线程进行计时操作，当到达时间后，再通知函数执行线程（主线程）将回调函数放入任务队列的宏任务队列中。
 
-            // 常见的宏任务：代码整体 script标签，setTimeout，setInterval，setImmediate，事件回调函数等。
+            // 常见的宏任务：代码整体 script标签，setTimeout，setInterval，setImmediate，事件回调函数,ajax回调，等。
             // 常见的微任务：原生Promise（有些实现的Promise将then方法放到了宏任务中）、process.nextTick、MutationObserver
             // 宏任务是有宿主环境发起的，微任务是js执行时产生的。
             // queueMicrotask(callback)：向微任务队列中添加一个任务
@@ -76,6 +79,53 @@
 
             // 主线程：JS只有一个线程，即主线程。事件循环就是主线程中调用（执行）栈里的代码执行完毕后，才开始执行的。
             // 所有主线程（调用栈）中要执行的代码事件过长就会阻塞事件循环的执行。
+
+            // 查看事件循环题的技巧：
+            // 1. 先将当前的代码分类出来，分为main script, 微任务 和 宏任务。
+            // main script标签中的一定先执行。
+            // 微任务按先后顺序执行，
+            // 然后执行宏任务。（微任务或宏任务中的异步也按这个方式分析。）
+
+            // 一个特别的题：
+            Promise.resolve()
+                .then((res) => {
+                    console.log(`0`);
+                    // 情况一：返回一个普通值，相当于直接resolve()出去一个值
+                    // return '4';
+
+                    // 情况二：返回一个thenable对象，会多加一次微任务
+                    // return {
+                    //     then(resolve) {
+                    //         resolve('4');
+                    //     },
+                    // };
+                    // 情况三：返回Promise
+                    // 首先返回的是Promise,往后推辞一次微任务
+                    // 然后调用Promise.resolve('4')方法再再多加一次微任务（这和浏览器实现机制有关）
+                    return Promise.resolve('4');
+                })
+                .then((res) => {
+                    console.log(res);
+                });
+            Promise.resolve()
+                .then(() => {
+                    console.log(`1`);
+                })
+                .then(() => {
+                    console.log(`2`);
+                })
+                .then(() => {
+                    console.log(`3`);
+                })
+                .then(() => {
+                    console.log(`5`);
+                })
+                .then(() => {
+                    console.log(`6`);
+                });
+            // 情况一结果: 0 1 4 2 3 5 6
+            // 情况二结果: 0 1 2 4 3 5 6
+            // 情况三结果: 0 1 2 3 4 5 6
         </script>
     </body>
 </html>
