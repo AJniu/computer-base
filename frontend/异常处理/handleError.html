@@ -59,6 +59,19 @@
             })();
 
             // throw关键字：主动抛出异常（作用相当于程序运行中出现了一个错误）
+
+            // 编写一个通用的错误处理工具函数(简略版 - 完整的可参考Vue源码的handleError)
+            const fnWithHandleError = (
+                fn,
+                defaultReturnVal = '',
+                ...fnArgs
+            ) => {
+                try {
+                    return fn(...fnArgs);
+                } catch (error) {
+                    return defaultReturnVal;
+                }
+            };
         </script>
     </body>
 </html>
