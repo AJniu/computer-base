@@ -29,6 +29,7 @@
             // 通过JSON实现深拷贝时，方法不能拷贝
 
             // 1. structuredClone()方法：ES6新特性，专门用来深拷贝
+            // 同样不能拷贝方法，如果拷贝的对象有方法，则会报错
             const deepArr = structuredClone(arr);
 
             // 自己写的deepCloe

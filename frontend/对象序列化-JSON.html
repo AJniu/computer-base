@@ -23,9 +23,10 @@
             const deepObj = JSON.parse(strObj);
 
             // 也可以直接编写JSON字符串：
-            // 1. JSON字符串有两种类型
+            // 1. JSON字的顶层支持三种类型的值
             //  - JSON对象 '{}'
             //  - JSON数组 '[]'
+            //  - 简单值：数字（Number）、字符串（String，双引号）、布尔值（Boolean）,null类型
 
             // 2. JSON字符串的属性名必须使用双引号（"", 因为其他语言字符串基本都是双引号包裹）
 
@@ -36,6 +37,77 @@
             //  - 控制（null）
             //  - 对象
             //  - 数组
+
+            // 目前JSON的常用场景：
+            // 1.网络数据传输的JSON数据
+            // 2.项目的某些配置文件
+            // 3.非关系型数据库(NOSQL)将json作为存储格式
+
+            // JSON.stringify()的细节：
+            const jsonObj = {
+                name: 'polar',
+                age: 18,
+                friends: { name: 'bear' },
+                hobbies: ['game', 'book', 'movie'],
+            };
+            // JSON.stringify()是接收三个参数的，其中第一个是要序列化的值。
+
+            // 一.stringify 的第二个参数 replacer
+
+            // 1.1 - 传入数组，设定哪些值是需要转换的（相当于filter）
+            // const jsonString = JSON.stringify(jsonObj, ['name', 'friends']);
+            // console.log(jsonString); // res ->'{"name":"polar","friends":{"name":"bear"}}'
+
+            // 1.2 - 传入一个回调函数，对对象的每个属性进行处理(相当于map处理)
+            // const jsonString = JSON.stringify(jsonObj, (key, value) => {
+            //     if (key === 'age') {
+            //         // age 加 1
+            //         return ++value;
+            //     }
+            //     if (key === 'friends') return; // 过滤掉friends
+            //     return value;
+            // });
+            // console.log(jsonString); // res ->'{"name":"polar","age":19,"hobbies":["game","book","movie"]}'
+
+            // 1.3 - 第二个参数为null或未提供，则按默认处理
+
+            // 二：stringify 的第三个参数 space, JSON字符串每一项前的填充
+            // 2.1 - 第三个参数为数字，则默认填充对应数字的空格
+            // const jsonString = JSON.stringify(jsonObj, null, 2);
+            // console.log(jsonString); // 打开控制台看效果
+
+            // 2.2 - 第三个参数为字符串，则填充对应的字符串
+            // const jsonString = JSON.stringify(jsonObj, null, '**');
+            // console.log(jsonString); // 打开控制台看效果
+
+            // 三：如果要转化的对象有toJSON()方法，则直接使用toJSON()方法的返回值作为结果
+            // const hasToJSONObj = {
+            //     name: 'hasToJSONObj',
+            //     toJSON() {
+            //         return 'from toJSON method';
+            //     },
+            // };
+            // const toJsonString = JSON.stringify(hasToJSONObj);
+            // console.log(toJsonString); // 'from toJSON method'
+
+            // JSON.parse() 的细节：
+            const jsonStr =
+                '{"name":"polar","age":18,"friends":{"name":"bear"},"hobbies":["game","book","movie"]}';
+
+            // 一：JSON.parse() 第二个参数 reviver
+            // 1.1 - 传入一个函数
+            const parsedObj = JSON.parse(jsonStr, (key, value) => {
+                if (key === 'age') {
+                    // age 加 1
+                    return ++value;
+                }
+                if (key === 'friends') return; // 过滤掉friends
+                return value;
+            });
+            console.log(parsedObj);
+
+            // 使用JSON深拷贝的缺陷：
+            // 如果对象中有方法，则JSON.stringify()序列化时，默认会将该方法移除
         </script>
     </body>
 </html>
