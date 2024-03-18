@@ -7,16 +7,26 @@
     </head>
     <body>
         <script>
-            // BOM - Browser Object Model(浏览器对象模型)
+            // BOM - Browser Object Model(浏览器对象模型：可以看作是js操作浏览器的桥梁)
             // BOM为我们提供了一组对象，通过这组对象可以完成对浏览器的各种操作
-            // BOM对象
-            // - Window：代表浏览器窗口（全局对象）
+
+            // BOM对象模型主要包括以下对象：
+            // - Window：代表浏览器窗口（包括全局属性，方法，控制浏览器窗口相关的属性， 方法）
             // - Navigator：浏览器的对象，通过它可操作浏览器（剪切板信息，定位，游戏手柄，识别浏览器等等）
-            // - Location：浏览器的地址栏信息
+            // - Location：浏览器的地址栏信息（URL）
             // - History：浏览器的历史记录（主要应用是控制浏览器的前进后退）
             // - Screen：用户屏幕的信息
 
             // BOM 对象都是作为 window 对象的属性保存的，所以可以直接在js中访问这些对象
+
+            // window: window在浏览器中有两个身份
+            //  1.全局对象
+            //  2.浏览器窗口对象：主要包括以下四类
+            //      1. 大量的属性,localStorage、console、location、history、screenX、scollX等
+            //      2. 大量的方法,alert、close、scrollTo、open等
+            //      3. 包含大量事件,focus、blue、load、hashChange等
+            //      4. 包含从EventTarget继承过来的方法，addEventListener、removeEventListener、dispatchEvent等
+            //          （window由 Window 类创建，而 Window类又继承自 EventTarget 类）
         </script>
     </body>
 </html>
