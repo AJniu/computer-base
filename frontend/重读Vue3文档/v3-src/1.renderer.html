@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3 渲染器简单实现</title>
+</head>
+<body>
+    <div id="app">
+
+    </div>
+    <script>
+        import { h } from 'vue'
+
+const vnode = h(
+  'div', // type
+  { id: 'foo', class: 'bar' }, // props
+  [
+    /* children */
+  ]
+)
+        const virtualDom = {
+            tag: 'div',
+            props: {
+                onclick: () => {
+                    console.log(`click event exector`);
+                }
+            },
+            children: [
+                {
+                    tag: 'span',
+                    props: {
+                        id: 'child-span',
+                    },
+                    children: "please click"
+                }
+            ]
+        }
+        // 渲染器 - 将virtual dom 转换为 真实Dom并挂载到container上
+        const renderer = (Vnode, container) => {
+            // 第一步: 创建一个对应Vnode.tag的真实Dom
+            const el = document.createElement(Vnode.tag)
+
+            // 第一步：便利props，为 el 添加属性和事件
+            for (const key in Vnode.props) {
+                if (/^on/.test(key)) {
+                    el.addEventListener(key.substr(2).toLowerCase(), Vnode.props[key])
+                } else {
+                    el.setAttribute(key, Vnode.props[key])
+                }
+            }
+
+            // 第三部分情况添加子节点
+            // 1. 如果children 是 string,则表示是文本节点，直接添加
+            // 2. 如果children 是 Array, 则递归调用 renderer
+            if (typeof Vnode.children === 'string') {
+                el.appendChild(document.createTextNode(Vnode.children)) 
+            } else if (Array.isArray(Vnode.children)) {
+                for (const child of Vnode.children) {
+                    renderer(child, el)
+                }
+            }
+            container.appendChild(el)
+        }
+        const app = document.getElementById('app')
+        renderer(virtualDom, app)
+        
+    </script>
+</body>
+</html>
