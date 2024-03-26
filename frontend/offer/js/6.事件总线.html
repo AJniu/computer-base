@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>自定义时间总线</title>
+    </head>
+    <body>
+        <h1>自定义事件总线</h1>
+        <p>自定义事件总线属于一种观察者模式，其中包括三个角色</p>
+        <ol>
+            <li>发布者（publisher）：发出事件（Event）</li>
+            <li>订阅者（subscriber）：订阅事件，并会做出响应（handler）</li>
+            <li>
+                事件总线（EventBus）：无论是发布者还是订阅者都是通过事件总线作为
+                中台的。
+            </li>
+        </ol>
+        <script>
+            // 自定义事件总线，实现下列方法：
+            // 1. 事件的监听方法on
+            // 2. 事件的发布方法emit
+            // 3. 事件的取消方法off
+            class EventBus {
+                constructor() {}
+                // 监听方法
+                on() {}
+                // 发布方法
+                emit() {}
+                // 取消方法;
+                off() {}
+            }
+
+            // 使用 - 在需要交流的文件内创建实例
+            const eventBus = new EventBus();
+
+            // compA.vue - 组件A监听信息
+            eventBus.on('from-compB', function () {});
+
+            // compA.vue - 组件B发布信息并传递参数
+            eventBus.publish('from-compB', 'componentName: compB');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>vue3 渲染器简单实现 - 组件</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script>
+            // 进一步考虑组件
+
+            // 1. 使用函数来表示一个组件
+            const myComp = function () {
+                return {
+                    tag: 'div',
+                    props: {
+                        onclick: () => {
+                            console.log(`myComp click`);
+                        },
+                    },
+                    children: [
+                        {
+                            tag: 'span',
+                            props: {
+                                id: 'child-span',
+                            },
+                            children: 'from myComp, please click',
+                        },
+                    ],
+                };
+            };
+            // 组件对应的虚拟DOM标签即是组件函数
+            const virtualDom = {
+                tag: myComp,
+            };
+
+            // 渲染器处理逻辑改变
+            // 1. 渲染普通虚拟dom
+            const mountElement = (Vnode, container) => {
+                // 第一步: 创建一个对应Vnode.tag的真实Dom
+                const el = document.createElement(Vnode.tag);
+
+                // 第一步：便利props，为 el 添加属性和事件
+                for (const key in Vnode.props) {
+                    if (/^on/.test(key)) {
+                        el.addEventListener(
+                            key.substr(2).toLowerCase(),
+                            Vnode.props[key]
+                        );
+                    } else {
+                        el.setAttribute(key, Vnode.props[key]);
+                    }
+                }
+
+                // 第三部分情况添加子节点
+                // 1. 如果children 是 string,则表示是文本节点，直接添加
+                // 2. 如果children 是 Array, 则递归调用 renderer
+                if (typeof Vnode.children === 'string') {
+                    el.appendChild(document.createTextNode(Vnode.children));
+                } else if (Array.isArray(Vnode.children)) {
+                    for (const child of Vnode.children) {
+                        renderer(child, el);
+                    }
+                }
+                container.appendChild(el);
+            };
+
+            // 2. 渲染组件
+            const mountComp = (Vnode, container) => {
+                // 1.使用函数表示组件
+                // 1.1 调用组件函数，获取组件想要渲染的虚拟dom
+                const subtree = Vnode.tag();
+                // 1.2 递归调用renderer 渲染subtree
+                renderer(subtree, container);
+            };
+            // 渲染器 - 将virtual dom 转换为 真实Dom并挂载到container上
+            const renderer = (Vnode, container) => {
+                if (typeof Vnode.tag === 'string') {
+                    mountElement(Vnode, container);
+                } else if (typeof Vnode.tag === 'function') {
+                    mountComp(Vnode, container);
+                }
+            };
+            const app = document.getElementById('app');
+            renderer(virtualDom, app);
+        </script>
+    </body>
+</html>

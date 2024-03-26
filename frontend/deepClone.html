@@ -26,10 +26,10 @@
             // 2. 深拷贝（deep copy）
             // -- 不仅复制对象，还复制对象中的属性/元素
 
-            // 通过JSON实现深拷贝时，方法不能拷贝
+            // 通过JSON实现深拷贝时，方法不能拷贝, Symbol属性和Symbol值都不会拷贝，循环引用（对象内部引用自己）会报错
 
             // 1. structuredClone()方法：ES6新特性，专门用来深拷贝
-            // 同样不能拷贝方法，如果拷贝的对象有方法，则会报错
+            // 同样不能拷贝方法，如果拷贝的对象有方法，或有Symbol，则会报错。循环引用（对象内部引用自己）会是undefined
             const deepArr = structuredClone(arr);
 
             // 自己写的deepCloe
