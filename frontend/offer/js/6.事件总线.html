@@ -16,29 +16,66 @@
                 中台的。
             </li>
         </ol>
+        <h2>原理:以一个EventBus实例对象做媒介，各个组件访问的都是这个实例对象，所以可以实现组件间的通信。</h2>
         <script>
             // 自定义事件总线，实现下列方法：
             // 1. 事件的监听方法on
             // 2. 事件的发布方法emit
             // 3. 事件的取消方法off
-            class EventBus {
-                constructor() {}
-                // 监听方法
-                on() {}
-                // 发布方法
-                emit() {}
-                // 取消方法;
-                off() {}
-            }
 
-            // 使用 - 在需要交流的文件内创建实例
+            // EventBus文件
+            class EventBus {
+                constructor() {
+                    // 事件总线 - 记录事件与其对应的回调函数
+                    this.eventList = {}
+                }
+                // 监听方法（subscriber） - on时收集回调函数
+                on(eventName, eventCb) {
+                    // 判断是否记录过此事件，若没有则记录
+                    if (!this.eventList[eventName]) {
+                        this.eventList[eventName] = []
+                    }
+                    // 将事件的回调函数记录下来
+                    this.eventList[eventName].push(eventCb)
+                }
+                // 发布方法 (pubulisher) - 逐个执行回调函数
+                emit(eventName, ...payload) {
+                    const handlers = this.eventList[eventName] || []
+                    for (const eventCb of handlers) {
+                        eventCb(...payload)
+                    }
+                }
+                // 取消订阅方法;
+                off(eventName, eventCb) {
+                    // 获取eventName事件订阅数组
+                    const handlers = this.eventList[eventName] 
+                    if (!handlers) return
+                    // 过滤掉要取消的订阅者
+                    const restHandlers = this.eventList[eventName].filter(item => item !== eventCb)
+                    this.eventList[eventName] = restHandlers
+                }
+            }
+            // 到处的是一个对象实例
+            // export default new EventBus()
+
+            // 真实使用 - 在需要交流的文件内创建实例
+            // import eventBus from 'EventBus'
+            
+            // 一个页面中模拟使用
             const eventBus = new EventBus();
 
+            const compBCb = function (...payload) {
+                console.log(`subscriber receiver info --->`, ...payload);
+            }
             // compA.vue - 组件A监听信息
-            eventBus.on('from-compB', function () {});
+            eventBus.on('from-compB', compBCb);
 
             // compA.vue - 组件B发布信息并传递参数
-            eventBus.publish('from-compB', 'componentName: compB');
+            eventBus.emit('from-compB', 'componentName: compB');
+            // 某个订阅者停止监听某事件
+            eventBus.off('from-compB', compBCb)
+            // 停止后，不再接收
+            eventBus.emit('from-compB', 'componentName: compB');
         </script>
     </body>
 </html>
