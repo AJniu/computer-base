@@ -110,5 +110,81 @@
                 return resObj;
             };
         </script>
+        <script>
+            // new deepClone
+            
+            // 1. 定义工具函数，精准获取数据类型
+            const getLowerType = (val) => {
+                return Object.prototype.toString.call(val).slice(8, -1).toLowerCase()
+            }
+            // 对常见的 Object,Array,Set,Map等做深拷贝， 不考虑循环引用
+            const deepCopy = (srcObj) => {
+                const type = getLowerType(srcObj)
+                
+                if (type === 'object') {
+                    const newObj = {}
+                    // 对对象进行深拷贝，分两种情况
+                    // 1.遍历非Symbol属性
+                    for (const key in srcObj) {
+                        // 递归调用deepCopy确保
+                        newObj[key] = deepCopy(srcObj[key])
+                    }
+                    // 对Symbol属性的处理
+                    const symbolKeys = Object.getOwnPropertySymbols(srcObj)
+                    for (const symbolKey of symbolKeys) {
+                        newObj[symbolKey] = deepCopy(srcObj[symbolKey])
+                    }
+                    return newObj
+                } else if(type === 'array') {
+                    const newArr = []
+                    // 对数组进行深拷贝
+                    for (const item of srcObj) {
+                        newArr.push(deepCopy(item))
+                    }
+                    return newArr
+                } else if (type === 'set') {
+                    let newSet = new Set()
+                    // Set 与 Map 处理情况类似
+                    srcObj.forEach(item => {
+                        newSet.add(deepCopy(item))
+                    });
+                    return newSet
+                } else if (type === 'map') {
+                    let newMap = new Map()
+                    // Set 与 Map 处理情况类似
+                    srcObj.forEach((val, key) => {
+                        newMap.set(key, deepCopy(val))
+                    });
+                    return newMap
+                } else {
+                    // 其它情况直接返回原本值
+                    return srcObj
+                }
+            }
+
+            const testObj = {
+                a: 1,
+                b: { c: 2, s: [3, 4, 6] },
+                d: [
+                    2,
+                    'string',
+                    () => {
+                        console.log(111);
+                    },
+                    { x: 11 },
+                ],
+                fn() {
+                    console.log(`fn`);
+                },
+                ns: new Set([1, 2, 3, {x: 'xx'}]),
+                nm: new Map([
+                    ['m', 1],
+                    ['n', 2]
+                ]),
+                [Symbol()]: 'is a Symbol'
+            };
+            const testObjCp = deepCopy(testObj)
+            console.log(testObjCp);
+        </script>
     </body>
 </html>
