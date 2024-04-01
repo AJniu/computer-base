@@ -11,7 +11,7 @@ App({
     onLaunch(options) {
         // 根据options.scene判断进入场景
         console.log(options)
-        // 展示本地存储能力
+        // 展示本地存储能力，小程序可以直接保存对象而不用转成JSON字符串
         const logs = wx.getStorageSync('logs') || [];
         logs.unshift(Date.now());
         wx.setStorageSync('logs', logs);
