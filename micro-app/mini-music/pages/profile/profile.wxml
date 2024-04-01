@@ -1,0 +1,5 @@
+<!--pages/profile/profile.wxml-->
+<text>pages/profile/profile.wxml</text>
+<view>
+当前用户：{{userInfo.name}}
+</view>

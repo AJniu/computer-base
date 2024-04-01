@@ -1,0 +1,16 @@
+/* pages/favor/favor.wxss */
+text {
+  font-size: 16px;
+  color: #333;
+}
+.text-ctx {
+  font-size: 20px;
+  color: tomato;
+}
+.counter {
+  font-size: 24px;
+  text-align: center;
+}
+.counter button {
+  font-size: 24px;
+}
