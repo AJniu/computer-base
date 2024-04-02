@@ -3,8 +3,8 @@
 <text class="text-ctx">pages/favor/favor.wxml</text>
 
 <!-- 2.块级组件 - view(相当于div) -->
-<!-- 3.同Vue一样，也可以使用插值语法{{ }} -->
-<view>{{ msg }}</view>
+<!-- 3.同Vue一样，也可以使用插值语法{{ }}，但与vue不同的是，动态属性也是mustache语法 -->
+<view id="{{ msg }}">{{ msg }}</view>
 
 <!-- 4.for循环 - 列表渲染(语法与Vue不同)  -->
 <view>

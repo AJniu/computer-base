@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/profile/profile",
-    "pages/favor/favor",
-    "pages/index/index"
+    "pages/favor/favor"
   ],
   "window": {
     "backgroundTextStyle": "dark",
@@ -16,10 +16,6 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页"
-      },
-      {
-        "pagePath": "pages/favor/favor",
-        "text": "喜爱"
       },
       {
         "pagePath": "pages/profile/profile",

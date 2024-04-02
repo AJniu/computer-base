@@ -2,6 +2,7 @@
 // Page()函数 - 实例化页面实例
 Page({
   // data 相当于Vue的data，不同的是Vue需要的是方法，而此处直接是对象
+  // 1.绑定初始化数据
   data: {
     // 1. 动态数据 - mustache 语法
     msg: 'polar bear favorite',
@@ -10,7 +11,8 @@ Page({
     count: 0, // 当前计数
     listNum: 50,
   },
-  // wxml中用到的方法，直接定义对象方法即可（像V3 和 V2的methods）
+  // 2. 事件处理函数
+  // wxml中用到的方法，直接定义对象方法即可（像V3 和 V2的methods）、
   increment() {
     // this - 页面实例
     // 调用 setData方法实现页面的响应式更改
