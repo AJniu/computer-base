@@ -2,7 +2,9 @@
 Page({
   data: {
     paths: [
-      { path: '/pages/favor/favor', name: '喜爱'}
+      { path: '/pages/favor/favor', name: '喜爱'},
+      { path: '/pages/lifecycle/lifecycle', name: '生命周期'},
+
     ]
   },
   toTargetPage(e) {
