@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .ctx {
+                font-size: 100px;
+                width: 1em;
+                height: 1em;
+                background-color: tomato;
+            }
+
+            html {
+                font-size: calc(100vw / 750);
+            }
+            .mobile-box {
+                width: 688rem;
+                height: 91rem;
+                background-color: tomato;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ctx">E</div>
+        <div class="mobile-box"></div>
+        <script>
+            // 长度单位：
+            // 1. px（像素）：显示器实际上是由一个一个的小点构成，每一个点都是一个像素。
+            //  每一台设备的像素大小是不同的，越清晰的设备像素就越小。
+
+            // 2. 百分比（%）：值会根据父元素（大部分是，但如margin之类的不是）的百分比计算
+
+            // 3. em：1em 等于 1 font-size（当前元素）
+
+            // 4. rem（root em）： 1 rem 等于 1 根元素（html）的 font-size
+
+            // 5. vw: 1vw = 1%  device-width
+
+            // 前置知识：
+            // 一. css像素和物理像素
+            // 像素是屏幕上一个一个发光的小点。
+            // 物理像素：显示器上真实的物理像素小点。
+            // css像素：编写css样式时使用的px。
+            // 在pc端，默认情况下，一个css像素对应一个物理像素。（像素比（css比物理）为1:1）
+            // 当我们对浏览器或系统中对网页进行缩放时，像素比会发生变化。如150%时，（像素比（css比物理）为1:1.5）
+            // （2K屏：2560*1440, 4K屏：4096*2160）
+
+            // 二. 移动端设备(以手机为例)
+            // 手机屏幕清晰度都是非常高的(物理像素小)，手机的单个像素远远小于PC。如果将PC端项目直接在手机中呈现，效果很差。
+
+            // 为了使得PC端页面在移动端正常显示：
+            //  - 在显示PC端页面时，移动端浏览器会自动将视口宽度（viewport）调整为980px（css像素）。
+            //  - 如果PC端页面宽度超过980px，浏览器会自动对页面进行缩小，使得网页可以在浏览器中完整呈现。
+            //  - 即使这样，浏览体验依旧很差。
+
+            // 三：完美视口
+            //  - 按照设计，每个手机的像素比都应该是 980:对应型号的物理像素，但实际开发中不会使用980px作为视口宽度。
+            //  - 每个移动设备在出厂时，都会设计一个最佳的像素比。如iPhone14 pro max最佳像素比是1:3。（以下都以此机型为例）
+            //  - 如果视口宽度设计为 980px 的话，则像素比为 980:1290,不符合最佳像素比。期望 1：3 = 430 ： 1290。
+            //  - 所以可以改变视口宽度,来改变像素比。<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0,minimal-ui,viewport-fit=cover">
+
+            // 适配问题
+            //  - 当开启完美视口后，不同设备下都能获得一个最佳浏览效果，但不同设备视口宽度不同，就导致了同样大小的px显示的差异。
+            //  - 所以就不能在移动端设备中使用px作为单位了。
+            // 在实际开发中，UI给的设计图都是以px为单位的，有375，750，1125, 414等
+
+            // 适配方案：
+            // 1. vw + rem 适配
+            // 将设计图转换为页面时，页面单位使用vw。
+            // 以宽度为750px的设计图为例： 750px = 100vw 所以 1px = 100vw / 750
+            // 要显示 688 * 91 的元素， 即约等于 91.73vw * 12.13vw
+            // 如果每次都要计算设计图px对页面单位vw的转换则过于麻烦，所以使用 rem 作为转换媒介，即 1 rem = 100vw / 750
+            // 这样这样可以直接使用 rem 做为单位。
+        </script>
+    </body>
+</html>
