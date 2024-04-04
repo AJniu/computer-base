@@ -44,3 +44,11 @@
 <!-- input组件使用 model:value 和 插值语法结合的方式实现数据双向绑定 -->
 <input type="text" class="bind-input" model:value="{{ inputBindVal }}"/>
 <view>{{ inputBindVal }}</view>
+
+<view>-------- wx:if - wx:elif - wx:else --------</view>
+<!-- 逻辑判断，相当于v-if -->
+<view wx:if="{{ isShowComp }}">显示此处</view>
+
+<view>-------- hidden属性 --------</view>
+<!-- 小程序组件的hidden属性相当于v-show -->
+<view hidden="{{ isShowComp }}">hidden 组件(DOM树中可见)</view>

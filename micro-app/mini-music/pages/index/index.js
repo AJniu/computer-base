@@ -5,6 +5,7 @@ Page({
       { path: '/pages/favor/favor', name: '喜爱'},
       { path: '/pages/lifecycle/lifecycle', name: '生命周期'},
       { path: '/pages/nativeComp/nativeComp', name: '原生组件'},
+      { path: '/pages/wxss-rpx/rpx', name: '自适应单位-rpx'},
     ]
   },
   toTargetPage(e) {

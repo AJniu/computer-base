@@ -1,5 +1,7 @@
 <view bind:tap="toTargetPage">
-  <block wx:for="{{paths}}" wx:key="path">
-    <button type="primary" data-path="{{ item.path }}">{{ item.name }}</button>
+<!-- 小知识 - 使用wx:for-item = "要修改的名称" 修改wx:for循环默认的每项的名称item -->
+<!-- 小知识 - 使用wx:for-index = "要修改的名称" 修改wx:for循环默认的每项的索引index -->
+  <block wx:for="{{paths}}" wx:key="path" wx:for-item="page" wx:for-index="i">
+    <button type="primary" data-path="{{ page.path }}">{{ i }}.{{ page.name }}</button>
   </block>
 </view>

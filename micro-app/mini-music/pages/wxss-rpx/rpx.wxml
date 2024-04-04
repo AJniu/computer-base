@@ -1,0 +1,6 @@
+<!--pages/wxss-rpx/rpx.wxml-->
+<text>pages/wxss-rpx/rpx.wxml</text>
+<view>尺寸单位：</view>
+<view>rpx（responsive pixel）:可以根据屏幕宽度进行自适应，规定屏幕(视口宽度)为750rpx。</view>
+<view>如：一般设计都是将iPhone6 的 视口宽度375px，750个物理像素作为设计参考的</view>
+<view>即： 750rpx === 375px === 750个物理像素, 即 1rpx = 0.5px = 1个物理像素</view>

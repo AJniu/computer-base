@@ -7,7 +7,8 @@ Page({
   data: {
     chooseImageSrc: 'https://ts1.cn.mm.bing.net/th/id/R-C.2a3d19a74231bf8532b4f6dfdb1fa20e?rik=Vh4kqRbFVeHAyQ&riu=http%3a%2f%2fimage.sciencenet.cn%2falbum%2f201205%2f11%2f231343b4u1lgltq41tqpps.jpeg&ehk=uIMTnh%2fR0cqeHK1pvQCnEjwkwU2LsqJfgdoVPKaA73A%3d&risl=&pid=ImgRaw&r=0',
     viewColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'],
-    inputBindVal: 'bind value'
+    inputBindVal: 'bind value',
+    isShowComp: true
   },
   // 获取用户信息 - 已废弃
   getUserInfo(e) {
