@@ -1,0 +1,46 @@
+<!--pages/nativeComp/nativeComp.wxml-->
+<text>pages/nativeComp/nativeComp.wxml</text>
+<view>-------- button组件 --------</view>
+<!-- button 组件的open-type属性可以设置微信开放能力 -->
+<!-- 1.getUserInfo 获取用户信息，现在已被废弃，不能获取真实信息 -->
+<button 
+  size="mini" 
+  type="primary" 
+  open-type="getUserInfo" 
+  bind:getuserinfo="getUserInfo">
+  用户信息
+</button>
+
+<button 
+  size="mini" 
+  type="primary" 
+  bind:tap="getUserProfile">
+  用户信息-新
+</button>
+
+<button 
+  size="mini" 
+  type="primary" 
+  open-type="getPhoneNumber" 
+  bind:getphonenumber="getPhoneNumber">
+  获取手机号
+</button>
+
+<view>-------- image组件 --------</view>
+<!-- 选取本地图片并显示 -->
+<button type="primary" bind:tap="choosePic">选择图片</button>
+<image src="{{ chooseImageSrc }}" mode="widthFix"/>
+
+<view>-------- scroll-view组件(可滚动视图区域) --------</view>
+<!-- scroll-view 必须有高度，且只有内容超过高度时才会出现滚动条 -->
+<!-- scroll-y 垂直滚动 -->
+<scroll-view class="view-container" scroll-y>
+  <block wx:for="{{ viewColors }}" wx:key="*this">
+    <view class="view-item" style="background-color: {{ item }};">{{ item }}</view>
+  </block>
+</scroll-view>
+
+<view>-------- input组件（双向绑定） --------</view>
+<!-- input组件使用 model:value 和 插值语法结合的方式实现数据双向绑定 -->
+<input type="text" class="bind-input" model:value="{{ inputBindVal }}"/>
+<view>{{ inputBindVal }}</view>

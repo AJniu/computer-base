@@ -1,0 +1,13 @@
+/* pages/nativeComp/nativeComp.wxss */
+.view-container {
+  height: 120px;
+}
+.view-item {
+  height: 50px;
+  color: #000;
+}
+.bind-input {
+  width: 300px;
+  height: 32px;
+  border: 1px solid tomato;
+}

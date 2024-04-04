@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/profile/profile",
     "pages/favor/favor",
-    "pages/lifecycle/lifecycle"
+    "pages/lifecycle/lifecycle",
+    "pages/nativeComp/nativeComp"
   ],
   "window": {
     "backgroundTextStyle": "dark",

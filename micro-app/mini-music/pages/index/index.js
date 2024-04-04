@@ -4,7 +4,7 @@ Page({
     paths: [
       { path: '/pages/favor/favor', name: '喜爱'},
       { path: '/pages/lifecycle/lifecycle', name: '生命周期'},
-
+      { path: '/pages/nativeComp/nativeComp', name: '原生组件'},
     ]
   },
   toTargetPage(e) {
