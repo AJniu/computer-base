@@ -5,7 +5,8 @@
     "pages/favor/favor",
     "pages/lifecycle/lifecycle",
     "pages/nativeComp/nativeComp",
-    "pages/wxss-rpx/rpx"
+    "pages/wxss-rpx/rpx",
+    "pages/wxs/wxs"
   ],
   "window": {
     "backgroundTextStyle": "dark",

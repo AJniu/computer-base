@@ -1,0 +1,31 @@
+<!--pages/wxs/wxs.wxml-->
+<!-- wxs方式一：使用wxs标签定义 -->
+<wxs module="format">
+  function fommatPrice(price, str = "$") {
+    return str + price
+  }
+  module.exports = {
+    fommatPrice: fommatPrice
+  }
+</wxs>
+<wxs src="/utils/format.wxs" module="OuterFormat"/>
+<text>pages/wxs/wxs.wxml</text>
+<view>------ wxs介绍 ------</view>
+<view>wxs: 小程序的一套脚本语言，结合wxml，可以构建出页面结构。</view>
+<view>wxs和js是不同的语言，有自己的语法，与js并不完全一致（基本一致）。</view>
+<view>------ wxs设计原因 ------</view>
+<view>wxs设计原因： 在wxml中是不能直接调用Page/Component中定义的函数。但在某些情况，我们希望可以使用函数来处理wxml中的数据（类似v2的过滤器），这时就需要使用wxs了。</view>
+<view>注：wxml中的插值语法，每次获取或更新都是通过微信从另一个线程（双线程模型）获取的，所以在wxml不能直接调用Page中的方法（此线程主要负责渲染）。而wxs可以直接在此线程中调用。</view>
+<view>------ wxs使用的限制和特点 ------</view>
+<view>1. wxs不依赖运行时的基础库版本，可以在所有版本的小程序运行。</view>
+<view>2. wxs的运行环境和其他js代码是隔离的，wxs中不能调用其他js文件中定义的函数，也不能使用小程序提供的API。</view>
+<view>3. 由于运行环境的差异，不同设备运行效率不同（现在还是ios高于安卓）</view>
+
+<view>------ wxs的两种写法 ------</view>
+<view>一. 直接在wxml中使用wxs标签（类似js的script标签），但与script不同的是：</view>
+<view>1. 必须在wxs标签中编写 module名，且外部要使用的东西必须使用CommonJS模块化方式导出</view>
+<view>2. 目前wxs对es6+的语法基本不支持，需使用es5的语法</view>
+<view>3. 在wxml中使用时也必须按照： 模块名.方法名 的形式使用</view>
+<view>例:格式化价格：{{format.fommatPrice(18)}}</view>
+<view>二. 将wxs内容单独抽取成一个.wxs的文件，然后在wxml中通过wxs标签引用：</view>
+<view>例:外部格式化价格：{{OuterFormat.formatPrice(18)}}</view>

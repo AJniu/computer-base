@@ -1,0 +1,6 @@
+function formatPrice(price, str = "¥") {
+  return str + price
+}
+module.exports = {
+  formatPrice: formatPrice
+}
