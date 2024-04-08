@@ -1,5 +1,5 @@
 {
-  "name": "easydb",
+  "name": "easy-idb",
   "version": "1.0.0",
   "description": "Simple encapsulation of IndexedDB",
   "main": "index.js",
