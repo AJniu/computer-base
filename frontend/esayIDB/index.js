@@ -16,4 +16,9 @@ request.onsuccess = (e) => {
 request.onerror = (e) => {
     console.log(e.target.error);
 };
+// 数据库版本变化事件
+request.onupgradeneeded = (e) => {
+    console.log(`数据库版本发生变化`);
+    db = e.target.result
+}
 // console.log(request)
