@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script src="./renderer.js"></script>
+        <script>
+            // 1. 通过h函数来创建一个Vnode对象
+            const VNode = h('div', { class: 'v-cls', id: 'hold' }, [
+                h('h2', null, '当前计数: 100'),
+                h(
+                    'button',
+                    {
+                        onClick: () => {
+                            console.log('100 + 1');
+                        },
+                    },
+                    '+1'
+                ),
+            ]);
+            // console.log('VNode', VNode);
+
+            // 2. 通过mount函数将VNode对象挂载到DOM节点
+            mount(VNode, document.getElementById('app'));
+            // 创建新的VNode
+            const newV = h(
+                'div',
+                { class: 'new-vnode', id: 'hold' },
+                '<h2>hahaha</h2>'
+            );
+            // 使用patch函数比较新旧节点
+            patch(VNode, newV);
+        </script>
+    </body>
+</html>
