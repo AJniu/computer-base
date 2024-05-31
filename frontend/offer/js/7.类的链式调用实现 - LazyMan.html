@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LazyMan</title>
+  </head>
+  <body>
+    <script>
+      // LazyMan 具有以下功能：
+      // 1. 链式调用 - 只需在每个方法返回对象实例本身即可实现
+      // 2. sleep(time)方法 -  time后执行后续操作
+      // 3. firstSleep(time)方法 - 构造函数执行完毕后首先执行firstSleep()方法，time后执行后续操作
+      // 实现1:
+      class LazyMan {
+        // 任务队列:存储链式调用任务
+        queue = [];
+        constructor(name) {
+          this.name = name;
+          console.log(`hi, i am ${name}`);
+
+          // 将任务队列的执行放入下一个宏任务，
+          // 确保链式调用的任务都存储在任务队列中
+          setTimeout(() => {
+            this.next();
+          });
+          return this;
+        }
+        // next方法:按序执行任务队列中的任务
+        next() {
+          const fn = this.queue.shift();
+          fn && fn();
+        }
+        // 普通任务，以eat为例：
+        eat(what) {
+          const fn = () => {
+            console.log(`eat ${what}`);
+            this.next();
+          };
+          this.queue.push(fn);
+          return this;
+        }
+
+        // 以私有属性抽离sleep和firstSleep方法延时执行的公共逻辑
+        #holdOn(time) {
+          // 返回一个 time s 后执行的函数
+          return () => {
+            setTimeout(() => {
+              console.log(`sleeped ${time} s`);
+              this.next();
+            }, time * 1000);
+          };
+        }
+        sleep(time) {
+          this.queue.push(this.#holdOn(time));
+          return this;
+        }
+        firstSleep(time) {
+          // 将firstSleep任务放在任务队列头部
+          this.queue.unshift(this.#holdOn(time));
+          return this;
+        }
+      }
+      let lazy = new LazyMan('polar bear');
+      lazy
+        .eat('morning')
+        .eat('lunch')
+        .sleep(2)
+        .eat('dinner')
+        .firstSleep(3)
+        .sleep(1)
+        .eat('end');
+    </script>
+  </body>
+</html>
