@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 使用video接收渲染音视频数据 -->
+    <video autoplay controls id="video-player"></video>
+    <script>
+      // 一. webrtc 枚举音视频设备 - 返回一个包含设备信息对象的数组
+      const devices = navigator.mediaDevices.enumerateDevices();
+      devices
+        .then((res) => {
+          // 一般groupId相同的设备，可认为是同一个设备
+          // （一个设备可能同时兼具音频，视频多种属性，此时音频、视频都会列出它，但设备id不同，groupId相同）
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      // 使用video渲染音视频数据
+      const videoPlayer = document.getElementById('video-player');
+
+      // 二. 获取音视频设备数据并使用video渲染 - getUserMedia
+      // navigator.mediaDevices
+      //   .getUserMedia({
+      //     // 传入约束对象
+      //     audio: true, // 是否要访问音频设备
+      //     video: {
+      //       width: 1280,
+      //       height: 720,
+      //     }, // 是否要访问视频设备
+      //   })
+      //   .then((mediaStream) => {
+      //     console.log(mediaStream);
+      //     // video对象查看HTMLMediaElement类
+      //     videoPlayer.srcObject = mediaStream;
+      //     // 遍历所有视频轨 - 找出现在使用的视频轨
+      //     mediaStream.getVideoTracks().forEach((videoTrack) => {
+      //       console.log(JSON.stringify(videoTrack.getSettings()));
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     console.log(`getMedia failed`, err);
+      //   });
+
+      // 三. 获取桌面数据（分享屏幕） - getDisplayMedia()
+      // navigator.mediaDevices
+      //   .getDisplayMedia({})
+      //   .then((mediaStream) => {
+      //     videoPlayer.srcObject = mediaStream;
+      //   })
+      //   .catch((err) => {
+      //     console.log(`getDisplayMedia failed:`, err);
+      //   });
+    </script>
+  </body>
+</html>
