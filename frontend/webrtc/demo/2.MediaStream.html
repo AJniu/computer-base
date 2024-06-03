@@ -11,7 +11,21 @@
       // 作用：MediaStream 实例对象用于表示媒体内容，它包含了一系列音视频轨道（MediaStreamTrack）
       // 构造方式：getUserMedia/ getDisplayMedia/ new MediaStream()
       // 主要方法：
-      //  1. addTrack():
+      //  1. addTrack():将轨道添加到MediaStream实例中
+      //  2. getTracks():获取MediaStream实例中所有的音视频轨道
+      //  3. getAudioTracks():获取MediaStream实例中所有音频轨道
+      //  4. getVideoTracks():获取MediaStream实例中所有视频轨道
+      // 注：数据传输就是将这些轨道添加到RTCPeerConnect中，发送给对端
+
+      // MediaStreamTrack - 轨道
+      // 作用：MediaStreamTrack 表示一个具体的音视频轨道。
+      // 重要属性：
+      //  1. MediaStreamTrack.id：轨道id
+      //  2. MediaStreamTrack.kind: audio/video
+      //  3. MediaStreamTrack.label：轨道标签
+      // 重要方法:
+      //  1. getConstraints()：获取轨道约束
+      //  2. getSettings()：获取轨道当前设置的属性
     </script>
   </body>
 </html>
