@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>媒体协商</title>
+  </head>
+  <body>
+    <script>
+      // 媒体协商：
+      // - 通信双方需要协商使用的编/解码器，编/解码器的具体参数，通话包含了哪些媒体信息，媒体怎么区分等等。
+      // 媒体协商流程，以A与B通信为例：
+      // 1. A RTPPeerConnection createOffer，将生成的offerSdp通过RTPPeerConnection.setLocalDescription()设置为本端描述
+      // 2. A 将 offerSdp 通过信令服务器发送给Bob
+      // 3. B 收到A的 offerSdp，调用RTPPeerConnection 的setRemoteDescription 将其设置为B RTPPeerConnection 的远端描述
+      // 4. B 调用 RTPPeerConnection createAnswer 生成 answerSdp，通过RTPPeerConnection.setLocalDescription() 将其设置为本端描述
+      // 5. B 将 answerSdp 通过信令服务器发送给A
+      // 6. A 收到 answerSdp ,通过 setRemoteDescription 将其设置为 A RTPPeerConnection 的远端描述
+    </script>
+  </body>
+</html>
