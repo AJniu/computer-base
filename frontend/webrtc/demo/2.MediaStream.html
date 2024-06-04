@@ -26,6 +26,29 @@
       // 重要方法:
       //  1. getConstraints()：获取轨道约束
       //  2. getSettings()：获取轨道当前设置的属性
+
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video: {
+            width: 1280,
+            height: 720,
+            frameRate: { min: 10, ideal: 60 }, // 帧数
+          },
+        })
+        .then((mediaStream) => {
+          // console.log(mediaStream.getTracks());
+          mediaStream.getTracks().forEach((track) => {
+            console.log(
+              `id: ${track.id}; kind: ${track.kind}; label: ${track.label}`
+            );
+            console.log(track.getSettings());
+            console.log(track.getConstraints());
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     </script>
   </body>
 </html>
