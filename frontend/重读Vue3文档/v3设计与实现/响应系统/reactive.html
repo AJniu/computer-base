@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>reactive实现</title>
+  </head>
+  <body>
+    <script>
+      // 前置知识：查看《响应式数据》文件
+
+      // 精准建立副作用函数与响应式属性之间的联系,所以创建了一种树形结构
+      // 第一层：使用WeakMap()存储，响应式对象和一个存储响应式熟悉的Map结构
+      // 即WeakMap 由 target -> Map<key, effectSet>构成
+      // 第二层：Map<key, effectSet> 由 key -> Set<effect>构成
+      const bucket = new WeakMap();
+
+      // 注册副作用函数的机制
+      // 1. 使用一个全局变量存储要被注册的副作用函数
+      let activeEffectFn;
+      // 2. registerEffectFn:用于注册副作用函数
+      const registerEffectFn = (fn) => {
+        activeEffectFn = fn;
+        fn();
+        // 重置
+        activeEffectFn = null;
+      };
+
+      // 收集副作用函数
+      const track = (target, key) => {
+        if (activeEffectFn) {
+          let targetMap = bucket.get(target);
+          if (!targetMap) {
+            targetMap = new Map();
+            bucket.set(target, targetMap);
+          }
+          let keyDeps = targetMap.get(key);
+          if (!keyDeps) {
+            keyDeps = new Set();
+            targetMap.set(key, keyDeps);
+          }
+          keyDeps.add(activeEffectFn);
+        }
+      };
+
+      // 触发副作用函数
+      const trigger = (target, key) => {
+        const targetMap = bucket.get(target);
+        if (targetMap) {
+          targetMap.forEach((fn) => {
+            fn();
+          });
+        }
+      };
+      // reactive - 将普通数据转换为响应式数据
+      const reactive = (raw) => {
+        return new Proxy(raw, {
+          get(target, key, receiver) {
+            track(target, key);
+            return Reflect.get(target, key, receiver);
+          },
+          set(target, key, value, receiver) {
+            Reflect.set(target, key, value, receiver);
+            trigger(target, key);
+          },
+        });
+      };
+
+      const obj = reactive({
+        ctx: 'hw',
+        isReactive: true,
+      });
+
+      registerEffectFn(() => {
+        console.log(`effectFn excute`);
+        document.body.innerText = obj.isReactive ? obj.ctx : 'not';
+      });
+
+      setTimeout(() => {
+        console.log('isReactive change');
+        obj.isReactive = false;
+      }, 2000);
+
+      setTimeout(() => {
+        obj.ctx = 'other';
+        console.log('ctx change');
+      }, 4000);
+    </script>
+  </body>
+</html>
