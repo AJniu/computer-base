@@ -47,9 +47,8 @@
       const trigger = (target, key) => {
         const targetMap = bucket.get(target);
         if (targetMap) {
-          targetMap.forEach((fn) => {
-            fn();
-          });
+          const effectSet = targetMap.get(key)
+          effectSet && effectSet.forEach(fn => fn())
         }
       };
       // reactive - 将普通数据转换为响应式数据
