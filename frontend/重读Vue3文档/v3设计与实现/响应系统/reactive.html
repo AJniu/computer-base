@@ -72,6 +72,8 @@
 
       registerEffectFn(() => {
         console.log(`effectFn excute`);
+        // 分支切换 - 当obj.isReactive 的值发生变化时，代码的执行分支会跟着变化，这就是分支切换。
+        // 当分支切换遇到响应式数据时会产生一个问题，即可能遗留不再使用的响应式数据的副作用函数。
         document.body.innerText = obj.isReactive ? obj.ctx : 'not';
       });
 
