@@ -20,11 +20,30 @@
       let activeEffectFn;
       // 2. registerEffectFn:用于注册副作用函数
       const registerEffectFn = (fn) => {
-        activeEffectFn = fn;
-        fn();
+        // 定义effectFn用来执行副作用函数并存储所有包含当前副作用函数的依赖集合。
+        const effectFn = () => {
+          // 调用cleanup
+          cleanup(effectFn)
+          activeEffectFn = effectFn;
+          fn();
+        }
+        // 定义effectFn.deps属性，存储副作用函数依赖集合
+        effectFn.deps = []
+        effectFn()
         // 重置
         activeEffectFn = null;
       };
+
+      // cleanup 每次副作用函数执行前，删除所有依赖集合中的此副作用函数
+      const cleanup = (effectFn) => {
+        // 遍历存储副作用函数的依赖集合
+        for (const keyDeps in effectFn.deps) {
+          // 将effectFn从依赖集合中移除
+          keyDeps.delete(effectFn)
+        }
+        // 重置effectFn.deps 数组
+        effectFn.deps.length = 0
+      }
 
       // 收集副作用函数
       const track = (target, key) => {
@@ -40,6 +59,8 @@
             targetMap.set(key, keyDeps);
           }
           keyDeps.add(activeEffectFn);
+          // 在收集副作用函数时，将副作用函数的依赖集合收集起来
+          activeEffectFn.deps.push(keyDeps)
         }
       };
 
@@ -48,7 +69,10 @@
         const targetMap = bucket.get(target);
         if (targetMap) {
           const effectSet = targetMap.get(key)
-          effectSet && effectSet.forEach(fn => fn())
+          // 为避免cleanup造成的无限循环
+          // effectSet && effectSet.forEach(fn => fn())
+          const effectsToRun = new Set(effectSet)
+          effectsToRun.forEach(effectFn => effectFn())
         }
       };
       // reactive - 将普通数据转换为响应式数据
@@ -74,6 +98,7 @@
         console.log(`effectFn excute`);
         // 分支切换 - 当obj.isReactive 的值发生变化时，代码的执行分支会跟着变化，这就是分支切换。
         // 当分支切换遇到响应式数据时会产生一个问题，即可能遗留不再使用的响应式数据的副作用函数。
+        // 要解决这个问题，可以在每次副作用函数执行时，先将它从所有与之关联的依赖集合中删除。当副作用函数执行完毕后，会重新与响应式数据建立联系。
         document.body.innerText = obj.isReactive ? obj.ctx : 'not';
       });
 
