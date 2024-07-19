@@ -70,6 +70,7 @@
         if (targetMap) {
           const effectSet = targetMap.get(key)
           // 为避免cleanup造成的无限循环
+          // (当副作用函数执行时,cleanup函数会将其从effectSet清除,但执行后,它又会将其添加到effectSet中,所以会造成无限循环)
           // effectSet && effectSet.forEach(fn => fn())
           const effectsToRun = new Set(effectSet)
           effectsToRun.forEach(effectFn => effectFn())
