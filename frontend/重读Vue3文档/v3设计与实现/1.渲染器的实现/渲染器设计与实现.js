@@ -85,7 +85,11 @@ function createRenderer() {
       // vnode不存在
       if (container._vnode) {
         // oldVNode 存在，说明是卸载操作（unmount）
-        container.innerHTML = ''; //
+        // container.innerHTML = ''; //
+        // 不能直接使用innerHTML清空的原因：
+        // 1.容器中可能有某个或多个子组件渲染，卸载时，应先正确调用组件的beforeUnmount，unmounted等生命周期函数
+        // 2.容器中某些元素可能有自定义指令，卸载时，应正确执行对应的指令钩子函数。
+        // 3.使用innerHTML不会移除绑定在dom元素上的事件处理函数
       }
     }
     // 更新oldVNode，将vnode存储到 container._vnode 下
