@@ -17,10 +17,8 @@
 
 // 1. 定义创建渲染器函数(通过向createRenderer传递配置项，可以实现跨平台（mount不依赖DOM）的渲染器)
 function createRenderer() {
-  // 定义挂载元素函数
-  function mountElement(vnode, container) {
-    // 创建dom元素，并让vnode.el引用真实dom（让vnode与真实dom建立联系，方便卸载）
-    const el = vnode.el = document.createElement(vnode.type);
+  // 定义比较属性函数patchProps
+  function patchProps(el, key, preValue, nextValue) {
     // 处理属性,属性有一些注意事项：
     // 1. HTML Attributes 和 DOM Properties是不同的,可以简单概括为：
     //  1.1: 核心原则：HTML Attributes 的作用是 设置与之对应的 DOM Properties 的初始值。
@@ -40,26 +38,31 @@ function createRenderer() {
     // 解决方法：在invoker中添加属性attached记录绑定时间（使用performance.now()高精度时间记录），与e.timeStamp（事件触发时间）作比较
     // 当触发时间早于绑定时间时，不执行此处理函数。
 
-    // 为解决这些问题，vue做了以下处理：
+    // 1.优先设置DOM Properties，判断key是否在el上
+    // 注：还有一些只读属性（如form等）需要直接用setAttribute设置，这里不做考虑
+    if (key in el) {
+      // 获取该 DOM Properties 的类型
+      const type = typeof el[key];
+      if (type === 'boolean' && value === '') {
+        // 当type为布尔类型且value是空字符串，则矫正为true
+        el[key] = true;
+      } else {
+        el[key] = nextValue;
+      }
+    } else {
+      // 2.如果key 在 DOM Properties 不存在，则使用 setAttribute 将属性设置到元素上
+      el.setAttribute(key, nextValue);
+    }
+  }
+  // 定义挂载元素函数
+  function mountElement(vnode, container) {
+    // 创建dom元素，并让vnode.el引用真实dom（让vnode与真实dom建立联系，方便卸载）
+    const el = (vnode.el = document.createElement(vnode.type));
+
     if (vnode.props) {
       for (const key in vnode.props) {
-        // 1.优先设置DOM Properties，判断key是否在el上
-        // 注：还有一些只读属性（如form等）需要直接用setAttribute设置，这里不做考虑
-        if (key in el) {
-          // 获取该 DOM Properties 的类型
-          const type = typeof el[key];
-          // 获取props传值
-          const value = vnode.props[key];
-          if (type === 'boolean' && value === '') {
-            // 当type为布尔类型且value是空字符串，则矫正为true
-            el[key] = true;
-          } else {
-            el[key] = value;
-          }
-        } else {
-          // 2.如果key 在 DOM Properties 不存在，则使用 setAttribute 将属性设置到元素上
-          el.setAttribute(key, vnode.props[key]);
-        }
+        // 直接调用patchProps更新属性
+        patchProps(el, key, null, vnode.props[key]);
       }
     }
     // 如果是字符串，则是文本节点
@@ -86,26 +89,26 @@ function createRenderer() {
 
     // 正确的卸载方式：
     // 根据vnode对象获取与其相关联的真实dom元素(vnode.el存储真实dom)，然后使用原生dom操作方法将该dom移除。
-    
+
     // 根据vnode获取真实dom
-    const el = vnode.el
+    const el = vnode.el;
     // 获取el的父元素
-    const parent = el.parentNode
+    const parent = el.parentNode;
     // 调用dom原生方法
-    if (parent) parent.removeChild(el)
-  }
+    if (parent) parent.removeChild(el);
+  };
   // patch 函数：渲染器核心入口，渲染逻辑的封装
   const patch = (n1, n2, container) => {
     // n1: oldVNode      n2: newVNode
 
     // 1.判断新旧节点是否为同一类型，若不是则卸载旧节点，挂载新节点(同类型才patch)
     if (n1 && n1.type !== n2.type) {
-      unmount(n1)
-      n1 = null
+      unmount(n1);
+      n1 = null;
     }
-    
-    const { type } = n2
-    const typeVal = typeof type
+
+    const { type } = n2;
+    const typeVal = typeof type;
     // 如果typeVal值为字符串，则它描述的是普通标签元素
     if (typeof typeVal === 'string') {
       if (!n1) {
@@ -113,16 +116,14 @@ function createRenderer() {
         mountElement(n2, container);
       } else {
         // 如果oldVNode存在，则对比n1，n2找出变更点并更新（patch操作）
-        patchElement(n1, n2)
-      } 
+        patchElement(n1, n2);
+      }
     } else if (typeVal === 'object') {
       // 如果typeVal的值为对象，则它描述的是组件
       // 调用组件相关的挂载和更新方法
-        
     } else {
       // 处理其他类型
     }
-    
   };
   // render方法：以container为挂载点，将vnode渲染为真实dom并添加到挂载点下面
   const render = (vnode, container) => {
@@ -134,7 +135,7 @@ function createRenderer() {
       // vnode不存在
       if (container._vnode) {
         // oldVNode 存在，说明是卸载操作（unmount）
-        unmount(container._vnode)
+        unmount(container._vnode);
       }
     }
     // 更新oldVNode，将vnode存储到 container._vnode 下
