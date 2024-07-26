@@ -37,6 +37,23 @@ const Comment = Symbol();
 //   ],
 // };
 
+// 定义Fragment节点标识：
+// Fragment节点解决了Vue2无法多根节点模板的问题，Vue3存在多根节点模板时，会使用Fragment包裹
+// Fragment本身不会渲染任何内容，所以只会渲染Fragment的子节点
+const Fragment = Symbol();
+// const mulRootTem = {
+//   type: Fragment,
+//   children: [
+//     {
+//       type: 'div',
+//       children: 'root1',
+//     },
+//     {
+//       type: 'p',
+//       children: 'root2',
+//     },
+//   ],
+// };
 // 1. 定义创建渲染器函数(通过向createRenderer传递配置项，可以实现跨平台（mount不依赖DOM）的渲染器)
 function createRenderer() {
   // 定义比较属性函数patchProps
@@ -161,6 +178,12 @@ function createRenderer() {
     // 正确的卸载方式：
     // 根据vnode对象获取与其相关联的真实dom元素(vnode.el存储真实dom)，然后使用原生dom操作方法将该dom移除。
 
+    // 由于Fragment节点的特殊性，单独处理
+    if (vnode.type === Fragment) {
+      // Fragment不渲染，所以只需逐个卸载子节点
+      vnode.children.forEach((c) => unmount(c));
+      return;
+    }
     // 根据vnode获取真实dom
     const el = vnode.el;
     // 获取el的父元素
@@ -202,6 +225,15 @@ function createRenderer() {
         if (n2.children !== n1.children) {
           el.nodeValue = n2.children;
         }
+      }
+    } else if (typeVal === Fragment) {
+      // 处理Fragment节点 - 特殊点：Fragment本身不会渲染，它包裹了多个根节点
+      if (!n1) {
+        // 旧节点不存在，将Fragment节点的children逐个挂载
+        n2.children.forEach((c) => patch(null, c, container));
+      } else {
+        // 旧节点存在，则对比Fragment节点的children并更新
+        patchChildren(n1, n2, container);
       }
     } else if (typeVal === 'object') {
       // 如果typeVal的值为对象，则它描述的是组件
