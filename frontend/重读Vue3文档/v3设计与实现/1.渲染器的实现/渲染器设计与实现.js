@@ -54,6 +54,56 @@ function createRenderer() {
       el.setAttribute(key, nextValue);
     }
   }
+
+  // 定义对比新旧子节点的函数patchChild
+  function patchChildren(n1, n2, container) {
+    // 如果新子节点类型是文本节点
+    if (typeof n2.children === 'string') {
+      // 则只有当旧子节点是一组子节点时，才需要逐个卸载
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach((c) => unmount(c));
+      }
+      // 否则直接将新文本设置给容器元素
+      container.textContent = n2.children;
+    } else if (Array.isArray(n2.children)) {
+      // 如果新子节点是一组子节点
+      if (Array.isArray(n1.children)) {
+        // 如果旧子节点也是一组子节点（diff算法比较处）
+        // 先简单实现 - 卸载所有旧子节点，挂载所有新子节点
+
+      } else {
+        // 否则，旧子节点的子节点要么不存在，要么是文本节点
+        // 清空container内容
+        container.textContent = '';
+        // 将新子节点的一组子节点使用patch挂载到container上
+        n2.children.forEach((c) => patch(null, c, container));
+      }
+    }
+  }
+
+  // 定义比较新旧子节点的函数
+  function patchElement(n1, n2) {
+    const el = (n2.el = n1.el); // 将真实dom引用到新vnode
+
+    // 一：更新props
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
+    // 1.1 将oldVnode与newVnode不相等的props更新为newVnode的props的值
+    for (const key in newProps) {
+      if (newProps[key] !== oldProps[key]) {
+        patchProps(el, key, oldProps[key], newProps[key]);
+      }
+    }
+    // 1.2 移除newVnode不存在的props
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        patchProps(el, key, oldProps[key], null);
+      }
+    }
+
+    // 二：更新子节点
+    patchChildren(n1, n2, el);
+  }
   // 定义挂载元素函数
   function mountElement(vnode, container) {
     // 创建dom元素，并让vnode.el引用真实dom（让vnode与真实dom建立联系，方便卸载）
@@ -101,7 +151,7 @@ function createRenderer() {
   const patch = (n1, n2, container) => {
     // n1: oldVNode      n2: newVNode
 
-    // 1.判断新旧节点是否为同一类型，若不是则卸载旧节点，挂载新节点(同类型才patch)
+    // 1.判断新旧子节点是否为同一类型，若不是则卸载旧子节点，挂载新子节点(同类型才patch)
     if (n1 && n1.type !== n2.type) {
       unmount(n1);
       n1 = null;
@@ -145,3 +195,17 @@ function createRenderer() {
     render,
   };
 }
+
+// 更新子节点的九种可能：以下为 old -> new （null为空，string代表文本节点，array代表一组子节点）
+// null -> null
+// null -> string
+// null -> array
+
+// string -> null
+// string -> string
+// string -> array
+
+// array -> null
+// array -> string
+// array -> array
+// 具体情况参考：https://www.yuque.com/polarbear-z8s9p/yukhdk/wnkio6qlox9w19ge
