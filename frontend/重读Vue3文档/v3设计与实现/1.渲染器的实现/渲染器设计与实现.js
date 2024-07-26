@@ -15,6 +15,28 @@
 // 如上所示：当再次调用render函数时，会使用 newVNode 与 oldVNode 进行比较，找到变更新变更点。
 // 这个过程叫做“打补丁”（更新或patch）。
 
+// 文本节点和注释节点 vnode 的实现
+// 通过定义唯一标识来辨别文本节点和注释节点
+// 文本节点标识：
+const Text = Symbol();
+// 注释节点标识
+const Comment = Symbol();
+// const newVnode = {
+//   type: 'div',
+//   children: [
+//     {
+//       // 注释节点
+//       type: Comment,
+//       children: '注释内容',
+//     },
+//     {
+//       // 文本节点
+//       type: Text,
+//       children: '文本内容',
+//     },
+//   ],
+// };
+
 // 1. 定义创建渲染器函数(通过向createRenderer传递配置项，可以实现跨平台（mount不依赖DOM）的渲染器)
 function createRenderer() {
   // 定义比较属性函数patchProps
@@ -70,7 +92,6 @@ function createRenderer() {
       if (Array.isArray(n1.children)) {
         // 如果旧子节点也是一组子节点（diff算法比较处）
         // 先简单实现 - 卸载所有旧子节点，挂载所有新子节点
-
       } else {
         // 否则，旧子节点的子节点要么不存在，要么是文本节点
         // 清空container内容
@@ -167,6 +188,20 @@ function createRenderer() {
       } else {
         // 如果oldVNode存在，则对比n1，n2找出变更点并更新（patch操作）
         patchElement(n1, n2);
+      }
+    } else if (typeVal === Text) {
+      // 如果为文本节点 (注释节点和文本节点处理方式基本一致，除了使用createComment(ctx)创建注释节点)
+
+      if (!n1) {
+        // 如果不存在旧节点, 创建文本节点
+        const el = (n2.el = document.createTextNode(n2.children));
+        container.innerHTML = el;
+      } else {
+        // 如果旧节点存在，且新旧文本内存不同，则跟新文本
+        const el = (n2.el = n1.el);
+        if (n2.children !== n1.children) {
+          el.nodeValue = n2.children;
+        }
       }
     } else if (typeVal === 'object') {
       // 如果typeVal的值为对象，则它描述的是组件
