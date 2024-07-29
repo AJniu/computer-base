@@ -108,7 +108,45 @@ function createRenderer() {
       // 如果新子节点是一组子节点
       if (Array.isArray(n1.children)) {
         // 如果旧子节点也是一组子节点（diff算法比较处）
-        // 先简单实现 - 卸载所有旧子节点，挂载所有新子节点
+        // 先简单实现 - 卸载所有旧子节点，挂载所有新子节点(无法充分复用节点，性能消耗较大)
+
+        const oldChildren = n1.children;
+        const newChildren = n2.children;
+
+        const oldLen = oldChildren.length;
+        const newLen = newChildren.length;
+        // 找出新旧两组子节点的公共长度，即较短的那一组子节点
+        const commonLen = Math.min(oldLen, newLen);
+
+        // 复用dom之前，先完成patch操作
+        for (let i = 0; i < newLen; i++) {
+          const newVNode = newChildren[i];
+          for (let j = 0; j < oldLen; j++) {
+            const oldVNode = oldChildren[j];
+            // 如果两个节点的key相同，则说明可以复用dom，但其中内容仍需调用patch更新
+            if (newVNode.key === oldVNode.key) {
+              patch(oldVNode, newVNode, container);
+              break;
+            }
+          }
+        }
+
+        // 对比公共长度部分
+        for (let i = 0; i < commonLen; i++) {
+          patch(oldChildren[i], newChildren[i], container);
+        }
+
+        if (newLen > oldLen) {
+          // 如果新子节点长度大于旧子节点长度，有新子节点需挂载
+          for (let i = commonLen; i < newLen; i++) {
+            patch(null, newChildren[i], container);
+          }
+        } else if (oldLen > newLen) {
+          // 当旧子节点长度大于新子节点长度，有剩余旧节点需卸载
+          for (let i = commonLen; i < oldLen; i++) {
+            unmount(oldChildren[i]);
+          }
+        }
       } else {
         // 否则，旧子节点的子节点要么不存在，要么是文本节点
         // 清空container内容
@@ -276,3 +314,11 @@ function createRenderer() {
 // array -> string
 // array -> array
 // 具体情况参考：https://www.yuque.com/polarbear-z8s9p/yukhdk/wnkio6qlox9w19ge
+
+// diff算法 - 渲染器核心
+// 简单来说，当新旧vnode的子节点都是一组节点时，为了以最小的性能开销来完成更新操作，
+// 需要比较两组子节点，比较的算法就叫diff算法。（操作dom性能开销通常较大，diff就是为了解决这个问题）
+
+// key的作用：
+// 简单来说是为了方便复用节点,以key作为vnode的唯一标识
+// 只要两个虚拟节点的type和key属性值都相同，那么就认为它们是相同的，即可以进行dom复用。
