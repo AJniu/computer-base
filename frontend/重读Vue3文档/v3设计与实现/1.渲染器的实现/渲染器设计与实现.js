@@ -119,6 +119,8 @@ function createRenderer() {
         const commonLen = Math.min(oldLen, newLen);
 
         // 复用dom之前，先完成patch操作
+        // lastIndex - 存储在寻找可复用节点过程中遇到的最大的索引值
+        let lastIndex = 0;
         for (let i = 0; i < newLen; i++) {
           const newVNode = newChildren[i];
           for (let j = 0; j < oldLen; j++) {
@@ -126,27 +128,51 @@ function createRenderer() {
             // 如果两个节点的key相同，则说明可以复用dom，但其中内容仍需调用patch更新
             if (newVNode.key === oldVNode.key) {
               patch(oldVNode, newVNode, container);
+              if (j < lastIndex) {
+                // 如果当前找到的节点在 oldChildren 中的索引值小于最大索引值lastIndex
+                // 说明该节点对应的真实dom需要移动
+                // 移动需注意两点：
+                // 1.newChildren对应的顺序就是更新后的dom的正确顺序
+                // 2.移动的的vnode对应的真实dom（即vnode.el指向的真实dom）
+                // 移动过程：
+                // 1.先获取 newVNode 的前一个 vnode，即preVNode
+                const preVNdoe = newVNode[i - 1];
+                // 如果preVNode不存在，说明当前newVNode是第一个节点，它不需要移动
+                // 如果存在，则需要移动
+                if (preVNdoe) {
+                  // 由于需要将 newVNode 对应的真实dom移动到preVNode所对应的真实dom后面
+                  // 所以需要获取preVNode所对应的真实dom的下一个兄弟节点，并将其作为锚点
+                  const anchor = preVNdoe.el.nextSibling || null;
+                  // 将 newVNode 对应的真实dom插入到锚点元素之前，也就是preVNode对应的真实dom后面
+                  container.insertBefore(newVNode.el, anchor);
+                }
+              } else {
+                // 如果当前找到的节点在 oldChildren 中的索引值不小于最大索引值
+                // 则更新最大索引值lastIndex
+                lastIndex = j;
+              }
               break;
             }
           }
         }
 
+        // 最简单处理
         // 对比公共长度部分
-        for (let i = 0; i < commonLen; i++) {
-          patch(oldChildren[i], newChildren[i], container);
-        }
+        // for (let i = 0; i < commonLen; i++) {
+        //   patch(oldChildren[i], newChildren[i], container);
+        // }
 
-        if (newLen > oldLen) {
-          // 如果新子节点长度大于旧子节点长度，有新子节点需挂载
-          for (let i = commonLen; i < newLen; i++) {
-            patch(null, newChildren[i], container);
-          }
-        } else if (oldLen > newLen) {
-          // 当旧子节点长度大于新子节点长度，有剩余旧节点需卸载
-          for (let i = commonLen; i < oldLen; i++) {
-            unmount(oldChildren[i]);
-          }
-        }
+        // if (newLen > oldLen) {
+        //   // 如果新子节点长度大于旧子节点长度，有新子节点需挂载
+        //   for (let i = commonLen; i < newLen; i++) {
+        //     patch(null, newChildren[i], container);
+        //   }
+        // } else if (oldLen > newLen) {
+        //   // 当旧子节点长度大于新子节点长度，有剩余旧节点需卸载
+        //   for (let i = commonLen; i < oldLen; i++) {
+        //     unmount(oldChildren[i]);
+        //   }
+        // }
       } else {
         // 否则，旧子节点的子节点要么不存在，要么是文本节点
         // 清空container内容
