@@ -177,6 +177,17 @@ function createRenderer() {
           }
         }
 
+        // 更新完成后，遍历oldChildren,看是否有多余节点需卸载
+        for (let i = 0; i < oldLen; i++) {
+          const oldVNode = oldChildren[i];
+          // 判断旧子节点是否在新子节点中被复用
+          const has = newChildren.find((vnode) => vnode.key === oldVNode.key);
+          if (!has) {
+            // 如果没有则将旧子节点卸载
+            unmount(oldVNode);
+          }
+        }
+
         // 最简单处理
         // 对比公共长度部分
         // for (let i = 0; i < commonLen; i++) {
