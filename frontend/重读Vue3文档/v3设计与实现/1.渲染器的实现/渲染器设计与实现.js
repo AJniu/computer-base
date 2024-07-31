@@ -123,10 +123,15 @@ function createRenderer() {
         let lastIndex = 0;
         for (let i = 0; i < newLen; i++) {
           const newVNode = newChildren[i];
+          // find - 判断是否能在旧子节点中找到可复用的节点
+          let find = false;
           for (let j = 0; j < oldLen; j++) {
             const oldVNode = oldChildren[j];
             // 如果两个节点的key相同，则说明可以复用dom，但其中内容仍需调用patch更新
             if (newVNode.key === oldVNode.key) {
+              // 找到可复用节点，将find的值置为true
+              find = true;
+
               patch(oldVNode, newVNode, container);
               if (j < lastIndex) {
                 // 如果当前找到的节点在 oldChildren 中的索引值小于最大索引值lastIndex
@@ -136,7 +141,7 @@ function createRenderer() {
                 // 2.移动的的vnode对应的真实dom（即vnode.el指向的真实dom）
                 // 移动过程：
                 // 1.先获取 newVNode 的前一个 vnode，即preVNode
-                const preVNdoe = newVNode[i - 1];
+                const preVNdoe = newChildren[i - 1];
                 // 如果preVNode不存在，说明当前newVNode是第一个节点，它不需要移动
                 // 如果存在，则需要移动
                 if (preVNdoe) {
@@ -153,6 +158,22 @@ function createRenderer() {
               }
               break;
             }
+          }
+
+          // 如果将旧子节点遍历后无可复用节点，则可认为newVNode是新增节点，需挂载
+          if (!find) {
+            // 为挂载到正确位置，获取当前newVNode的前一个node节点做锚点元素
+            const preVNode = newChildren[i - 1];
+            if (preVNode) {
+              // 前一个node节点存在，使用它的下一个兄弟节点做锚点
+              anchor = preVNode.el.nextSibling;
+            } else {
+              // 没有前一个node节点，则说明挂载的是一个子节点
+              // 使用容器元素的firstChild作为锚点
+              anchor = container.firstChild;
+            }
+            // 挂载newVNode
+            patch(null, newVNode, container, anchor);
           }
         }
 
@@ -207,7 +228,7 @@ function createRenderer() {
     patchChildren(n1, n2, el);
   }
   // 定义挂载元素函数
-  function mountElement(vnode, container) {
+  function mountElement(vnode, container, anchor = null) {
     // 创建dom元素，并让vnode.el引用真实dom（让vnode与真实dom建立联系，方便卸载）
     const el = (vnode.el = document.createElement(vnode.type));
 
@@ -228,7 +249,7 @@ function createRenderer() {
       });
     }
     // 将元素添加到容器中
-    container.appendChild(el);
+    container.insertBefore(el, anchor);
   }
 
   // unmount 函数：处理卸载逻辑
@@ -256,7 +277,7 @@ function createRenderer() {
     if (parent) parent.removeChild(el);
   };
   // patch 函数：渲染器核心入口，渲染逻辑的封装
-  const patch = (n1, n2, container) => {
+  const patch = (n1, n2, container, anchor) => {
     // n1: oldVNode      n2: newVNode
 
     // 1.判断新旧子节点是否为同一类型，若不是则卸载旧子节点，挂载新子节点(同类型才patch)
@@ -271,7 +292,7 @@ function createRenderer() {
     if (typeof typeVal === 'string') {
       if (!n1) {
         // 如果oldVNode不存在，说明是mount操作
-        mountElement(n2, container);
+        mountElement(n2, container, anchor);
       } else {
         // 如果oldVNode存在，则对比n1，n2找出变更点并更新（patch操作）
         patchElement(n1, n2);
