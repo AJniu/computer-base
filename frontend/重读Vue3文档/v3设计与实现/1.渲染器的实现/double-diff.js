@@ -69,7 +69,14 @@ function createRenderer() {
     // 当四步操作找不到可复用节点后，单独做处理
     // 四步操作中: 不可复用则不做处理
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-      if (oldStartVNode.key === newStartVNode.key) {
+      if (oldStartVNode === undefined) {
+        // 旧首为undefined，说明dom节点已经被移动过了，直接跳过
+        oldStartVNode = oldChildren[++oldStartIdx]
+      } else if (oldEndVNode === undefined) {
+        // 旧尾为undefined，直接跳过
+        oldEndVNode = oldChildren[--oldEndIdx]
+
+      } else if (oldStartVNode.key === newStartVNode.key) {
         // 旧首 - 新首 可复用
         patch(oldStartVNode, newStartVNode, container);
         // 位置相同，不需要移动dom
@@ -109,10 +116,34 @@ function createRenderer() {
           (oldVNode) => oldVNode.key === newStartVNode.key
         );
         // 当新首能在旧子节点中找到可复用节点时
-        if (idxInOld >= 0) {
+        if (idxInOld > 0) {
+          // idxInOld 索引对应的vnode就是需要移动的节点
+          const vnodeToMove = oldChildren[idxInOld]
+          patch(vnodeToMove, newStartVNode, container)
+          // 将需要移动的真实dom，移动到oldStartVNode对应的真实dom之前
+          container.insertBefore(vnodeToMove.el, oldStartVNode.el)
+          // 将已经移动的dom在oldChildren中设置为undefined
+          oldChildren[idxInOld] = undefined
+          // 更新新首的索引和对应节点
+          newStartVNode = newChildren[++newStartIdx]
         } else {
-          // 否则,可认为新首为新增子节点
+          // 否则,可认为新首为新增子节点,直接挂载到旧首节点之前
+          patch(null, newStartVNode, container, oldStartVNode.el)
         }
+        // 更新新首的索引及节点
+        newStartVNode = newChildren[++newStartIdx]
+      }
+    }
+    
+    if (oldEndIdx < oldStartIdx && newStartIdx <= newEndIdx) {
+      // 说明四步循环走完之后，还有新增子节点未挂载,遍历挂载新增子节点
+      for (let i = newStartIdx; i<= newEndIdx; i++) {
+        patch(null, newChildren[i], container, oldStartIdx.el)
+      }
+    } else if (newEndIdx < newStartIdx && oldStartIdx <= oldEndIdx) {
+      // 说明四步循环走完之后，还有多余的旧子节点未移除，遍历移除它们
+      for (let i = oldStartIdx; i <= oldEndIdx; i++) {
+        unmount(oldChildren[i])
       }
     }
   }
