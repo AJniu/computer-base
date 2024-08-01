@@ -55,6 +55,66 @@ function createRenderer() {
     let oldEndIdx = oldChildren.length - 1;
     let newStartIdx = 0;
     let newEndIdx = newChildren.length - 1;
+    // 四个索引指向的 vnode 节点
+    let oldStartVNode = oldChildren[oldStartIdx];
+    let oldEndVNode = oldChildren[oldEndIdx];
+    let newStartVNode = newChildren[newStartIdx];
+    let newEndVNode = newChildren[newEndIdx];
+
+    // 双端比较四步：
+    // 1. 旧首字节点与新首字节点是否可复用(旧首 - 新首)
+    // 2. 旧尾子节点与新尾子节点是否可复用(旧尾 - 新尾)
+    // 3. 旧首子节点与新尾子节点是否可复用(旧首 - 新尾)
+    // 4. 旧尾子节点与新首子节点是否可复用(旧尾 - 新首)
+    // 当四步操作找不到可复用节点后，单独做处理
+    // 四步操作中: 不可复用则不做处理
+    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+      if (oldStartVNode.key === newStartVNode.key) {
+        // 旧首 - 新首 可复用
+        patch(oldStartVNode, newStartVNode, container);
+        // 位置相同，不需要移动dom
+        // 更新旧首与新首的索引和节点
+        oldStartVNode = oldChildren[++oldStartIdx];
+        newStartVNode = newChildren[++newStartIdx];
+      } else if (oldEndVNode.key === newEndVNode.key) {
+        // 旧尾 - 新尾 可复用
+        // 由于都处于最后，所以dom位置无需更改，只需更新内容
+        patch(oldEndVNode, newEndVNode, container);
+
+        // 然后更新旧尾和新尾的索引和节点
+        oldEndVNode = oldChildren[--oldEndIdx];
+        newEndVNode = newChildren[--newEndIdx];
+      } else if (oldStartVNode.key === newEndVNode.key) {
+        // 旧首 - 新尾 可复用
+        patch(oldStartVNode, newEndVNode, container);
+
+        // 位置变化,需要移动到尾部,将旧首对应的真实dom移动到旧尾对应的真实dom之后
+        container.insertBefore(oldStartVNode.el, oldEndVNode.el.nextSibling);
+        // 更新旧首和新尾的索引和节点
+        oldStartVNode = oldChildren[++oldStartIdx];
+        newEndVNode = newChildren[--newEndIdx];
+      } else if (oldEndVNode.key === newStartVNode.key) {
+        // 旧尾 - 新首 可复用
+        // 此时，调用patch更新内容
+        patch(oldEndVNode, newStartVNode, container);
+        // 需要将 oldEndIdx 指向的虚拟节点所对应的真实dom移动到 oldStartIdx 所指向的真实dom之前
+        container.insertBefore(oldEndVNode.el, oldStartVNode.el);
+
+        // 移动 dom 完成后，更新旧尾和新首的索引和节点
+        oldEndVNode = oldChildren[--oldEndIdx];
+        newStartVNode = newChildren[++newStartIdx];
+      } else {
+        // 单独处理四步操作找不到可复用节点的情况
+        const idxInOld = oldChildren.findIndex(
+          (oldVNode) => oldVNode.key === newStartVNode.key
+        );
+        // 当新首能在旧子节点中找到可复用节点时
+        if (idxInOld >= 0) {
+        } else {
+          // 否则,可认为新首为新增子节点
+        }
+      }
+    }
   }
 
   // 定义对比新旧子节点的函数patchChild
