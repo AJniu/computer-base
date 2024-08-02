@@ -135,7 +135,7 @@ function createRenderer() {
     if (oldEndIdx < oldStartIdx && newStartIdx <= newEndIdx) {
       // 说明四步循环走完之后，还有新增子节点未挂载,遍历挂载新增子节点
       for (let i = newStartIdx; i <= newEndIdx; i++) {
-        patch(null, newChildren[i], container, oldStartIdx.el);
+        patch(null, newChildren[i], container, oldStartVNode.el);
       }
     } else if (newEndIdx < newStartIdx && oldStartIdx <= oldEndIdx) {
       // 说明四步循环走完之后，还有多余的旧子节点未移除，遍历移除它们
