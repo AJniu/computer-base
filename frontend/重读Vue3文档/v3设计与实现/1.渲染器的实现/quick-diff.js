@@ -1,4 +1,5 @@
-// 双端diff算法：是一种同时对新旧两组子节点的两个端点进行比较的算法，因此需要四个索引值，分别指向新旧两组子节点的头尾端点。
+// 快速diff算法特点：
+// 1. 快速diff算法包含预处理步骤
 // 文本节点标识：
 const Text = Symbol();
 // 注释节点标识
@@ -50,98 +51,59 @@ function createRenderer() {
   function patchKeyedChildren(n1, n2, container) {
     const oldChildren = n1.children;
     const newChildren = n2.children;
-    // 定义四个索引值
-    let oldStartIdx = 0;
-    let oldEndIdx = oldChildren.length - 1;
-    let newStartIdx = 0;
-    let newEndIdx = newChildren.length - 1;
-    // 四个索引指向的 vnode 节点
-    let oldStartVNode = oldChildren[oldStartIdx];
-    let oldEndVNode = oldChildren[oldEndIdx];
-    let newStartVNode = newChildren[newStartIdx];
-    let newEndVNode = newChildren[newEndIdx];
 
-    // 双端比较四步：
-    // 1. 旧首字节点与新首字节点是否可复用(旧首 - 新首)
-    // 2. 旧尾子节点与新尾子节点是否可复用(旧尾 - 新尾)
-    // 3. 旧首子节点与新尾子节点是否可复用(旧首 - 新尾)
-    // 4. 旧尾子节点与新首子节点是否可复用(旧尾 - 新首)
-    // 当四步操作找不到可复用节点后，单独做处理
-    // 四步操作中: 不可复用则不做处理
-    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-      if (oldStartVNode === undefined) {
-        // 旧首为undefined，说明dom节点已经被移动过了，直接跳过
-        oldStartVNode = oldChildren[++oldStartIdx];
-      } else if (oldEndVNode === undefined) {
-        // 旧尾为undefined，直接跳过
-        oldEndVNode = oldChildren[--oldEndIdx];
-      } else if (oldStartVNode.key === newStartVNode.key) {
-        // 旧首 - 新首 可复用
-        patch(oldStartVNode, newStartVNode, container);
-        // 位置相同，不需要移动dom
-        // 更新旧首与新首的索引和节点
-        oldStartVNode = oldChildren[++oldStartIdx];
-        newStartVNode = newChildren[++newStartIdx];
-      } else if (oldEndVNode.key === newEndVNode.key) {
-        // 旧尾 - 新尾 可复用
-        // 由于都处于最后，所以dom位置无需更改，只需更新内容
-        patch(oldEndVNode, newEndVNode, container);
+    // 处理相同的前置节点
+    // 定义索引 j 指向新旧两组子节点的开头
+    let j = 0;
+    let osv = oldChildren[j];
+    let nsv = newChildren[j];
 
-        // 然后更新旧尾和新尾的索引和节点
-        oldEndVNode = oldChildren[--oldEndIdx];
-        newEndVNode = newChildren[--newEndIdx];
-      } else if (oldStartVNode.key === newEndVNode.key) {
-        // 旧首 - 新尾 可复用
-        patch(oldStartVNode, newEndVNode, container);
-
-        // 位置变化,需要移动到尾部,将旧首对应的真实dom移动到旧尾对应的真实dom之后
-        container.insertBefore(oldStartVNode.el, oldEndVNode.el.nextSibling);
-        // 更新旧首和新尾的索引和节点
-        oldStartVNode = oldChildren[++oldStartIdx];
-        newEndVNode = newChildren[--newEndIdx];
-      } else if (oldEndVNode.key === newStartVNode.key) {
-        // 旧尾 - 新首 可复用
-        // 此时，调用patch更新内容
-        patch(oldEndVNode, newStartVNode, container);
-        // 需要将 oldEndIdx 指向的虚拟节点所对应的真实dom移动到 oldStartIdx 所指向的真实dom之前
-        container.insertBefore(oldEndVNode.el, oldStartVNode.el);
-
-        // 移动 dom 完成后，更新旧尾和新首的索引和节点
-        oldEndVNode = oldChildren[--oldEndIdx];
-        newStartVNode = newChildren[++newStartIdx];
-      } else {
-        // 单独处理四步操作找不到可复用节点的情况
-        const idxInOld = oldChildren.findIndex(
-          (oldVNode) => oldVNode.key === newStartVNode.key
-        );
-        // 当新首能在旧子节点中找到可复用节点时
-        if (idxInOld > 0) {
-          // idxInOld 索引对应的vnode就是需要移动的节点
-          const vnodeToMove = oldChildren[idxInOld];
-          patch(vnodeToMove, newStartVNode, container);
-          // 将需要移动的真实dom，移动到oldStartVNode对应的真实dom之前
-          container.insertBefore(vnodeToMove.el, oldStartVNode.el);
-          // 将已经移动的dom在oldChildren中设置为undefined
-          oldChildren[idxInOld] = undefined;
-        } else {
-          // 否则,可认为新首为新增子节点,直接挂载到旧首节点之前
-          patch(null, newStartVNode, container, oldStartVNode.el);
-        }
-        // 更新新首的索引及节点
-        newStartVNode = newChildren[++newStartIdx];
-      }
+    // while循环向后遍历，直到新旧节点不可复用为止（key不同）
+    while (osv.key === nsv.key) {
+      // 由于位置相同，不需要移动真实dom，只需要调用patch更新内容
+      patch(osv, nsv, container);
+      // 更新 j 索引及新旧vnode
+      j++;
+      osv = oldChildren[j];
+      nsv = newChildren[j];
     }
 
-    if (oldEndIdx < oldStartIdx && newStartIdx <= newEndIdx) {
-      // 说明四步循环走完之后，还有新增子节点未挂载,遍历挂载新增子节点
-      for (let i = newStartIdx; i <= newEndIdx; i++) {
-        patch(null, newChildren[i], container, oldStartIdx.el);
+    // 处理后置节点：由于新旧子节点数量可能不同，所以使用两个索引分别指向新旧尾节点
+    let oei = oldChildren.length - 1;
+    let nei = newChildren.length - 1;
+
+    let oev = oldChildren[oei];
+    let nev = newChildren[nei];
+    while (oev.key === nev.key) {
+      patch(oev, nev, container);
+      oev = oldChildren[--oei];
+      nev = oldChildren[--nei];
+    }
+
+    // 预处理完毕后，还有几种情况需处理：
+    // 1. j > oei && j <= nei 说明旧子节点处理完毕，而新子节点 j - nei 还有新节点需挂载
+    if (j > oni && j <= nei) {
+      // 因为nei此时指向的是已处理完毕的上一个节点，所以锚点应是nei + 1处的节点（即最后处理完毕的节点）
+      const anchorIndex = nei + 1;
+      // 获取锚点元素
+      const anchor =
+        anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null;
+      // 逐个挂载 j - nei 处的新增节点
+      while (j <= nei) {
+        patch(null, newChildren[j++], container, anchor);
       }
-    } else if (newEndIdx < newStartIdx && oldStartIdx <= oldEndIdx) {
-      // 说明四步循环走完之后，还有多余的旧子节点未移除，遍历移除它们
-      for (let i = oldStartIdx; i <= oldEndIdx; i++) {
-        unmount(oldChildren[i]);
+    } else if (j > nei && j <= oei) {
+      // 2. j > nei && j <= oei 说明新子节点处理完毕，而旧子节点 j - oei 还有多余节点需卸载
+      while (j <= oei) {
+        unmount(oldChildren[j++]);
       }
+    } else {
+      // 3. 经过预处理后，不满足上述两种条件，仍有部分节点需要单独处理
+      // 构造source数组，它的长度是新子节点中剩余未处理节点的数量,并将其属性初始化为 -1.
+      // source数组的作用：用来存储新子节点在旧子节点中的位置的索引，用它计算出一个最长递增子序列，并用于辅助完成dom移动的操作。
+      const count = nei - j + 1;
+      const source = new Array(count);
+      source.fill(-1);
     }
   }
 
