@@ -1,5 +1,10 @@
 // 快速diff算法特点：
 // 1. 快速diff算法包含预处理步骤
+// 2. 根据最长递增子序列移动dom
+
+// 最长递增子序列:简单来说，给定一个数值序列，找到它的一个子序列，并且该子序列中的值是递增的，子序列中的元素在原序列中不一定连续。
+// 一个序列可能有多个递增子序列，其中最长的那个被称为最长递增子序列。
+// 如：[0, 8, 4, 12],它的最长递增子序列可以是[0, 8, 12] 和 [0, 4, 12]
 // 文本节点标识：
 const Text = Symbol();
 // 注释节点标识
@@ -104,6 +109,73 @@ function createRenderer() {
       const count = nei - j + 1;
       const source = new Array(count);
       source.fill(-1);
+
+      // 完成source数组的填充
+      // 定义新旧子节点未处理节点的起始索引
+      let osi = j;
+      let nsi = j;
+      // 定义变量moved和pos,判断是否需要移动dom
+      let moved = false;
+      // pos 代表遍历旧的一组子节点的过程中遇到的最大索引值
+      // 简单diff时可知,在遍历过程中遇到的索引值呈现递增趋势,则说明不需要移动节点,反之则需要.
+      let pos = 0;
+      // 构建新子节点中未处理节点的key: index 的索引表
+      // 这样可以将填充source数组的过程的复杂度从新旧子节点的双层遍历的O(n^2)变成O(n)
+      const keyIndex = {};
+      for (let i = nsi; i <= nei; i++) {
+        keyIndex[newChildren[i].key] = i;
+      }
+      // 定义patched变量，代表更新过的节点数量
+      let patched = 0;
+
+      // 遍历旧子节点中未处理的节点
+      for (let i = osi; i < oei; i++) {
+        const ov = oldChildren[i];
+        // 遍历新子节点（未建立keyIndex前）
+        // for (let j = nsi; j < nei; j++) {
+        //   const nv = newChildren[i];
+        //   // 找到可复用的节点
+        //   if (ov.key === nv.key) {
+        //     patch(ov, nv, container);
+        //     // 最后将新子节点在旧子节点的索引放到source对应位置中
+        //     source[j - osi] = i;
+        //   }
+        // }
+
+        // 建立keyIndex后
+        // 如果更新过的节点数量小于新子节点未处理的数量
+        if (patched < count) {
+          // 通过索引表快速找到新子节点在旧子节点中可复用的节点
+          const iInNewChildren = keyIndex[ov.key];
+
+          if (iInNewChildren !== undefined) {
+            // 如果iInNewChildren不等于undefined，说明当前ov可复用
+            const nv = newChildren[iInNewChildren];
+            patch(ov, nv, container);
+            // 每更新一个节点，将patched计数加1
+            patched++;
+            // 将nv在旧子节点的索引填充到source对应位置
+            source[iInNewChildren - nsi] = i;
+
+            if (iInNewChildren < pos) {
+              // 判断节点是否需要移动
+              moved = true;
+            } else {
+              pos = iInNewChildren;
+            }
+          } else {
+            // 如果没找到，说明当前ov不可复用，需要卸载
+            unmount(ov);
+          }
+        } else {
+          // 否则代表未处理的新子节点已处理完毕,多余的旧子节点需卸载
+          unmount(ov);
+        }
+      }
+
+      // 当需要移动dom时
+      if (moved) {
+      }
     }
   }
 
