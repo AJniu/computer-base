@@ -57,7 +57,7 @@ function createRenderer() {
     const oldChildren = n1.children;
     const newChildren = n2.children;
 
-    // 处理相同的前置节点
+    // 一.处理相同的前置节点
     // 定义索引 j 指向新旧两组子节点的开头
     let j = 0;
     let osv = oldChildren[j];
@@ -73,7 +73,7 @@ function createRenderer() {
       nsv = newChildren[j];
     }
 
-    // 处理后置节点：由于新旧子节点数量可能不同，所以使用两个索引分别指向新旧尾节点
+    // 二.处理后置节点：由于新旧子节点数量可能不同，所以使用两个索引分别指向新旧尾节点
     let oei = oldChildren.length - 1;
     let nei = newChildren.length - 1;
 
@@ -85,7 +85,7 @@ function createRenderer() {
       nev = oldChildren[--nei];
     }
 
-    // 预处理完毕后，还有几种情况需处理：
+    // 三.预处理完毕后，还有几种情况需处理：
     // 1. j > oei && j <= nei 说明旧子节点处理完毕，而新子节点 j - nei 还有新节点需挂载
     if (j > oni && j <= nei) {
       // 因为nei此时指向的是已处理完毕的上一个节点，所以锚点应是nei + 1处的节点（即最后处理完毕的节点）
@@ -144,8 +144,8 @@ function createRenderer() {
 
         // 建立keyIndex后
         // 如果更新过的节点数量小于新子节点未处理的数量
-        if (patched < count) {
-          // 通过索引表快速找到新子节点在旧子节点中可复用的节点
+        if (patched <= count) {
+          // 拿旧子节点的key值去索引表查找该节点在新的一组子节点中的位置
           const iInNewChildren = keyIndex[ov.key];
 
           if (iInNewChildren !== undefined) {
@@ -168,13 +168,53 @@ function createRenderer() {
             unmount(ov);
           }
         } else {
-          // 否则代表未处理的新子节点已处理完毕,多余的旧子节点需卸载
+          // 否则代表未处理的新子节点已处理完毕,有多余的旧子节点需卸载
           unmount(ov);
         }
       }
 
-      // 当需要移动dom时
+      // 当需要移动dom时（经过以上处理，已经更新可复用节点内容，并卸载了多余节点）
       if (moved) {
+        // 获取source的最长递增子序列之一（最长递增子序列中的元素在source数组中的位置索引）
+        // seq位置索引的含义是（以[0, 1]为例）：在新的一组子节点中，重新编号后索引值为0,1的这两个节点在更新前后顺序没有发生变化，
+        //  即重新编号后，newChildren索引值为0和1的节点不需要移动。
+        const seq = getSequence(source);
+        // 创建索引i,指向除去前后置节点后的新子节点中的尾部
+        let i = count - 1;
+        // 创建索引s,指向最长递增子序列的尾部
+        let s = seq.length - 1;
+
+        // for循环递减i，让 i 从后向前移动（指向）
+        for (i; i >= 0; i--) {
+          if (source[i] === -1) {
+            // 如果source[i] === -1，说明该节点是新节点，挂载该元素
+            const pos = i + nsi;
+            const newVNode = newChildren[pos];
+            // 查找该节点下一个节点的位置索引
+            const nextPos = pos + 1;
+            // 获取锚点元素
+            const anchor =
+              nextPos < newChildren.length ? newChildren[nextPos].el : null;
+            // 挂载
+            patch(null, newVNode, container, anchor);
+          } else if (seq[s] !== i) {
+            // 如果节点的索引i不等于seq[s]的值，则说明该节点对应的真实dom需要移动
+            // 获取该节点在新子节点中的真实索引
+            const pos = i + nsi;
+            const newVNode = newChildren[pos];
+            // 该节点的下一个节点的位置索引
+            const nextPos = pos + 1;
+            // 获取锚点元素
+            const anchor =
+              nextPos < newChildren.length ? newChildren[nextPos].el : null;
+
+            // 移动元素
+            container.insertBefore(newVNode.el, anchor);
+          } else {
+            // 节点索引i等于seq[s]的值，代表该节点不需要移动，修改s的指向
+            s--;
+          }
+        }
       }
     }
   }
@@ -337,4 +377,55 @@ function createRenderer() {
   return {
     render,
   };
+}
+
+// 最长递增子序列算法
+function getSequence(arr) {
+  const p = arr.slice(); // 回溯专用
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    // 排除了等于0的情况，原因是0并不代表任何dom元素，只是用来做占位的
+    if (arrI !== 0) {
+      j = result[result.length - 1];
+      // 当前值大于子序列最后一项
+      if (arr[j] < arrI) {
+        // p内存储当前值的前一位下标
+        p[i] = j;
+        // 存储当前值的下标
+        result.push(i);
+        continue;
+      }
+      u = 0;
+      v = result.length - 1;
+      // 当前数值小于子序列最后一项时，使用二分法找到第一个大于当前数值的下标
+      while (u < v) {
+        c = ((u + v) / 2) | 0;
+        if (arr[result[c]] < arrI) {
+          u = c + 1;
+        } else {
+          v = c;
+        }
+      }
+      if (arrI < arr[result[u]]) {
+        // 第一位不需要操作，一位它没有前一项
+        if (u > 0) {
+          // p内存储找到的下标的前一位
+          p[i] = result[u - 1];
+        }
+        // 找到下标，直接替换result中的数值
+        result[u] = i;
+      }
+    }
+  }
+  u = result.length;
+  v = result[u - 1];
+  // 回溯，从最后一位开始，将result全部覆盖，
+  while (u-- > 0) {
+    result[u] = v;
+    v = p[v];
+  }
+  return result;
 }
