@@ -87,7 +87,7 @@ function createRenderer() {
 
     // 三.预处理完毕后，还有几种情况需处理：
     // 1. j > oei && j <= nei 说明旧子节点处理完毕，而新子节点 j - nei 还有新节点需挂载
-    if (j > oni && j <= nei) {
+    if (j > oei && j <= nei) {
       // 因为nei此时指向的是已处理完毕的上一个节点，所以锚点应是nei + 1处的节点（即最后处理完毕的节点）
       const anchorIndex = nei + 1;
       // 获取锚点元素
