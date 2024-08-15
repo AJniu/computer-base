@@ -283,6 +283,18 @@ function createRenderer() {
     container.insertBefore(el, anchor);
   }
 
+  // mountComponent 挂载组件函数
+  function mountComponent(vnode, container, anchor) {
+    // 通过vnode获取组件的选项对象，即vnode.type
+    const componentOptions = vnode.type;
+    // 获取组件的渲染函数render
+    const { render } = componentOptions;
+    // 执行render函数，获取组件要渲染的虚拟dom
+    const subTree = render();
+    // 调用patch函数来挂载组件内容
+    patch(null, subTree, container, anchor);
+  }
+
   // unmount 函数：处理卸载逻辑
   const unmount = (vnode) => {
     // container.innerHTML = ''; //
@@ -354,6 +366,11 @@ function createRenderer() {
     } else if (typeVal === 'object') {
       // 如果typeVal的值为对象，则它描述的是组件
       // 调用组件相关的挂载和更新方法
+      if (!n1) {
+        mountComponent(n2, container, anchor);
+      } else {
+        patchComponent(n1, n2);
+      }
     } else {
       // 处理其他类型
     }
